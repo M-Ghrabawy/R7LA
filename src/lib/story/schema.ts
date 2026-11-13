@@ -116,11 +116,47 @@ export const choicePuzzleSchema = z.object({
   answer: z.string(),
 });
 
+export const scanPuzzleSchema = z.object({
+  type: z.literal("scan"),
+  prompt: z.string().min(1),
+  hint: z.string().min(1),
+  success: z.string().min(1),
+  tolerance: z.number().positive().max(20),
+  targets: z
+    .array(
+      z.object({
+        id: z.string().min(1),
+        label: z.string().min(1),
+        frequency: z.number().min(0).max(100),
+        detail: z.string().min(1),
+        sourceIds: z.array(z.string()),
+      }),
+    )
+    .min(2),
+});
+
+export const signalPuzzleSchema = z.object({
+  type: z.literal("signal"),
+  prompt: z.string().min(1),
+  hint: z.string().min(1),
+  success: z.string().min(1),
+  azimuth: z.object({
+    target: z.number().min(0).max(180),
+    tolerance: z.number().positive().max(25),
+  }),
+  gain: z.object({
+    target: z.number().min(0).max(100),
+    tolerance: z.number().positive().max(30),
+  }),
+});
+
 export const puzzleSchema = z.discriminatedUnion("type", [
   hotspotPuzzleSchema,
   sequencePuzzleSchema,
   classifyPuzzleSchema,
   choicePuzzleSchema,
+  scanPuzzleSchema,
+  signalPuzzleSchema,
 ]);
 
 export const storySceneSchema = z.object({

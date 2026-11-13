@@ -1,6 +1,7 @@
 import type { Chapter } from "@/lib/story/schema";
+import { moonChapter } from "./moon-chapter";
 
-export const rexChapters: Chapter[] = [
+const baseChapters: Chapter[] = [
   {
     id: "departure",
     slug: "the-departure",
@@ -771,6 +772,10 @@ export const rexChapters: Chapter[] = [
     ],
   },
 ];
+
+export const rexChapters = baseChapters.map((chapter) =>
+  chapter.id === moonChapter.id ? moonChapter : chapter,
+);
 
 export const chaptersBySlug = new Map(
   rexChapters.map((chapter) => [chapter.slug, chapter]),

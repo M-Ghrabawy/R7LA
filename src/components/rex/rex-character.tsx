@@ -88,7 +88,7 @@ export function RexHead({
       />
       <path
         d="M176 20 Q212 29 220 69 L211 63 Q202 36 174 27Z"
-        fill="#e4b44c"
+        fill="#58c8e8"
         opacity=".9"
       />
       <path
@@ -120,14 +120,13 @@ export function RexHead({
         <path d="M117 137 Q130 146 143 137" fill="none" stroke="#62ecff" strokeWidth="4" strokeLinecap="round" />
       )}
       <g>
-        <ellipse cx="45" cy="99" rx="18" ry="28" fill="#e4b44c" />
+        <ellipse cx="45" cy="99" rx="18" ry="28" fill="#58c8e8" />
         <ellipse cx="45" cy="99" rx="12" ry="20" fill="#0a1720" stroke="#58e8fa" strokeWidth="3" />
-        <ellipse cx="215" cy="99" rx="18" ry="28" fill="#e4b44c" />
+        <ellipse cx="215" cy="99" rx="18" ry="28" fill="#58c8e8" />
         <ellipse cx="215" cy="99" rx="12" ry="20" fill="#0a1720" stroke="#58e8fa" strokeWidth="3" />
       </g>
-      <path d="M190 19 L199 -4" stroke="#9a7324" strokeWidth="5" strokeLinecap="round" />
-      <path d="M199 -4 L212 2" stroke="#e4b44c" strokeWidth="5" strokeLinecap="round" />
-      <circle cx="213" cy="2" r="4" fill="#62ecff" />
+      <path d="M130 27 L130 12" stroke="#9aabb3" strokeWidth="4" strokeLinecap="round" />
+      <circle cx="130" cy="7" r="5.5" fill="#57d9ff" />
       <path
         d="M78 170 Q130 188 182 170 L174 189 Q130 199 86 189Z"
         fill="#10181d"
@@ -203,9 +202,9 @@ export function RexCharacter({
           <stop offset="1" stopColor="#070e13" />
         </linearGradient>
         <linearGradient id="rex-gold" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#f6dc8f" />
-          <stop offset=".55" stopColor="#e4b44c" />
-          <stop offset="1" stopColor="#986e20" />
+          <stop offset="0" stopColor="#e9fdff" />
+          <stop offset=".55" stopColor="#58c8e8" />
+          <stop offset="1" stopColor="#577887" />
         </linearGradient>
         <radialGradient id="rex-visor" cx=".38" cy=".28" r=".8">
           <stop offset="0" stopColor="#1e3846" />
@@ -267,8 +266,8 @@ export function RexCharacter({
         <path d="M108 199 Q130 190 152 199 L151 236 Q130 244 109 236Z" fill="#c9d0d3" opacity=".55" />
         <path d="M130 205 L145 229 L115 229Z" fill="#0b7a8f" stroke="#39b9c9" strokeWidth="2" />
         <path d="M130 212 L136 224 L124 224Z" fill="#62ecff" opacity=".65" />
-        <circle cx="106" cy="246" r="4" fill="#e4b44c" />
-        <circle cx="154" cy="246" r="4" fill="#e4b44c" />
+        <circle cx="106" cy="246" r="4" fill="#58c8e8" />
+        <circle cx="154" cy="246" r="4" fill="#58c8e8" />
 
         <g transform={leftArm}>
           <circle cx="88" cy="185" r="19" fill="url(#rex-gold)" stroke="#8b6824" strokeWidth="1.2" />
@@ -335,9 +334,9 @@ export function RexCharacter({
             <ellipse cx="217" cy="133" rx="18" ry="29" fill="url(#rex-gold)" />
             <ellipse cx="217" cy="133" rx="12" ry="21" fill="#07131c" stroke="#58e8fa" strokeWidth="3" />
           </g>
-          <path d="M190 55 L201 23" stroke="#9a7324" strokeWidth="5" strokeLinecap="round" />
-          <path d="M201 23 L218 31" stroke="url(#rex-gold)" strokeWidth="5" strokeLinecap="round" />
-          <circle cx="220" cy="31" r="4.5" fill="#62ecff" filter="url(#rex-cyan-glow)" />
+          <path d="M130 58 L130 27" stroke="#9aabb3" strokeWidth="5" strokeLinecap="round" />
+          <circle cx="130" cy="19" r="8" fill="#57d9ff" filter="url(#rex-cyan-glow)" />
+          <path d="M96 61 Q130 48 164 61" fill="none" stroke="#d9ecf1" strokeWidth="2" opacity=".45" />
           <path d="M79 204 Q130 222 181 204 L174 222 Q130 232 86 222Z" fill="#10181d" />
         </g>
       </g>
@@ -350,8 +349,8 @@ export function RexCharacter({
       )}
       {pose === "low-power" && (
         <g opacity=".65">
-          <circle cx="130" cy="182" r="3" fill="#e4b44c" />
-          <text x="138" y="186" fill="#e4b44c" fontSize="9" fontFamily="monospace">LOW</text>
+          <circle cx="130" cy="182" r="3" fill="#58c8e8" />
+          <text x="138" y="186" fill="#58c8e8" fontSize="9" fontFamily="monospace">LOW</text>
         </g>
       )}
     </svg>

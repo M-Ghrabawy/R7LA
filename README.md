@@ -14,8 +14,10 @@ SPACE RELICS is an independent editorial project by **AFTERLIGHT**. It is not af
 
 ### Archive
 
-- 14 researched artifact records across the Moon and Mars.
-- 60 source records, 43 evidence claims, 71 timeline events, and 27 local NASA photographs.
+- 14 full primary investigations across the Moon and Mars.
+- 12 additional catalogued NASA objects spanning the Moon, Mars, Ceres, Eros, deep space, and heliocentric orbit.
+- 60 source records, 43 evidence claims, 71 timeline events, and 27 local NASA photographs in the primary archive.
+- REX field studies and Moon scene redesign with spectrum scanning and laser-link interactions.
 - Physical status separated from operational status:
   - present
   - present but not directly imaged
@@ -61,11 +63,11 @@ Five interactive chapters:
 4. **What Remains**
 5. **A Message to Tomorrow**
 
-Plus **14 field studies**, one for every relic.
+Plus **14 field studies**, one for every relic. Moon field studies include four scenes and the redesigned lunar chapter includes spectrum scanning and laser-link alignment interactions.
 
 Story features:
 
-- Consistent original SVG REX character, based on the supplied reference, **without the cape**.
+- Consistent original blue-and-white SVG REX character, based on the supplied reference, **without the cape and without reproducing the NASA logo**.
 - Reusable vector landscapes, artifact props, character poses, expressions, and scene transitions.
 - Data-driven scene system.
 - Reusable interactive puzzles:
@@ -101,6 +103,7 @@ Story features:
 |---|---|
 | `/` | Observatory landing experience |
 | `/explore` | Planet Explorer |
+| `/catalog` | Extended NASA catalogue |
 | `/relics/[id]` | Artifact investigation |
 | `/timeline` | Mission chronology |
 | `/evidence` | Claim and citation ledger |

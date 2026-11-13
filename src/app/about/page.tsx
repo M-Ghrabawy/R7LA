@@ -94,12 +94,14 @@ export default function AboutPage() {
               sources.
             </p>
             <p>
-              The archive currently contains {archiveStats.relics} object
-              records across the Moon and Mars, drawn from {archiveStats.missions}{" "}
-              missions. It is deliberately finite. Every missing field is left
-              missing rather than filled with plausible-looking data. Where a
-              position is approximate, the record says so. Where an object is
-              still active, it is not described as abandoned.
+              The primary archive currently contains {archiveStats.relics}
+              full object investigations across the Moon and Mars, drawn from{" "}
+              {archiveStats.missions} missions, with an additional extended NASA
+              catalogue covering small bodies, deep-space probes, and later Mars
+              hardware. Every missing field is left missing rather than filled
+              with plausible-looking data. Where a position is approximate, the
+              record says so. Where an object is still active, it is not
+              described as abandoned.
             </p>
             <p>
               The Legacy Score is an original editorial instrument by

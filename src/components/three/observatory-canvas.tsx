@@ -110,15 +110,19 @@ function Starfield() {
 }
 
 function ArtifactMarker({
-  relic,
-  selected,
+  relics,
+  selectedId,
   onSelect,
 }: {
-  relic: SceneRelic;
-  selected: boolean;
+  relics: SceneRelic[];
+  selectedId: string | null;
   onSelect: (id: string) => void;
 }) {
-  const color = useMarkerColor(relic);
+  const relic = relics[0];
+  const selected = relics.some((item) => item.id === selectedId);
+  const markerRelic =
+    relics.find((item) => item.id === selectedId) ?? relic;
+  const color = useMarkerColor(markerRelic);
   const position = useMemo(
     () => latLonToVector3(relic.latitude, relic.longitude, 2.08),
     [relic.latitude, relic.longitude],
@@ -154,7 +158,14 @@ function ArtifactMarker({
       position={position}
       onClick={(event) => {
         event.stopPropagation();
-        onSelect(relic.id);
+        const currentIndex = relics.findIndex(
+          (item) => item.id === selectedId,
+        );
+        const next =
+          currentIndex >= 0
+            ? relics[(currentIndex + 1) % relics.length]
+            : relics[0];
+        onSelect(next.id);
       }}
       onPointerOver={(event) => {
         event.stopPropagation();
@@ -199,6 +210,28 @@ function ArtifactMarker({
       </Billboard>
     </group>
   );
+}
+
+function clusterRelics(relics: SceneRelic[]): SceneRelic[][] {
+  const clusters: SceneRelic[][] = [];
+  for (const relic of relics) {
+    const point = latLonToVector3(relic.latitude, relic.longitude, 1);
+    const existing = clusters.find((cluster) => {
+      const anchor = cluster[0];
+      const anchorPoint = latLonToVector3(
+        anchor.latitude,
+        anchor.longitude,
+        1,
+      );
+      return anchorPoint.distanceTo(point) < 0.02;
+    });
+    if (existing) {
+      existing.push(relic);
+    } else {
+      clusters.push([relic]);
+    }
+  }
+  return clusters;
 }
 
 function Planet({
@@ -274,11 +307,11 @@ function Planet({
           />
         </mesh>
       )}
-      {relics.map((relic) => (
+      {clusterRelics(relics).map((cluster) => (
         <ArtifactMarker
-          key={relic.id}
-          relic={relic}
-          selected={relic.id === selectedId}
+          key={cluster.map((item) => item.id).join("-")}
+          relics={cluster}
+          selectedId={selectedId}
           onSelect={onSelect}
         />
       ))}

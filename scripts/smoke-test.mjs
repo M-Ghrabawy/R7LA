@@ -3,6 +3,7 @@ const base = (process.env.BASE_URL || "http://localhost:3000").replace(/\/$/, ""
 const routes = [
   "/",
   "/explore",
+  "/catalog",
   "/timeline",
   "/evidence",
   "/legacy",

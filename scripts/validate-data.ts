@@ -4,6 +4,7 @@ import { relics, sources, archiveEvidence, archiveTimeline } from "../src/lib/da
 import { rexChapters } from "../src/data/rex/chapters";
 import { discoveryLogs } from "../src/data/rex/discovery-logs";
 import { fieldStudies } from "../src/data/rex/field-studies";
+import { extendedCatalog } from "../src/data/extended-catalog";
 import {
   chapterSchema,
   fieldStudySchema,
@@ -163,6 +164,15 @@ for (const chapter of rexChapters) {
           errors.push(`Chapter ${chapter.slug} scene ${scene.id} requires more hotspots than exist`);
         }
       }
+      if (scene.puzzle.type === "scan") {
+        for (const target of scene.puzzle.targets) {
+          for (const sourceId of target.sourceIds) {
+            if (!sourceIds.has(sourceId)) {
+              errors.push(`Chapter ${chapter.slug} scene ${scene.id} scan target unknown source ${sourceId}`);
+            }
+          }
+        }
+      }
     }
   }
 }
@@ -197,6 +207,26 @@ for (const relic of relics) {
   }
 }
 
+const extendedIds = new Set<string>();
+for (const object of extendedCatalog) {
+  if (extendedIds.has(object.id)) {
+    errors.push(`Duplicate extended catalogue id: ${object.id}`);
+  }
+  extendedIds.add(object.id);
+  const imagePath = join(publicDir, object.image.src.replace(/^\//, ""));
+  if (!existsSync(imagePath)) {
+    errors.push(`Extended catalogue ${object.id}: missing image ${object.image.src}`);
+  }
+  for (const source of object.sources) {
+    if (!source.url.startsWith("https://")) {
+      errors.push(`Extended catalogue ${object.id}: non-HTTPS source`);
+    }
+  }
+  if (!object.image.sourceUrl.startsWith("https://")) {
+    errors.push(`Extended catalogue ${object.id}: non-HTTPS image record`);
+  }
+}
+
 if (errors.length) {
   console.error("DATA VALIDATION FAILED");
   for (const error of errors) console.error(`- ${error}`);
@@ -213,3 +243,4 @@ console.log(`  REX chapters: ${rexChapters.length}`);
 console.log(`  REX scenes: ${rexChapters.reduce((sum, chapter) => sum + chapter.scenes.length, 0)}`);
 console.log(`  REX field studies: ${fieldStudies.length}`);
 console.log(`  REX discovery logs: ${discoveryLogs.length}`);
+console.log(`  extended catalogue: ${extendedCatalog.length}`);

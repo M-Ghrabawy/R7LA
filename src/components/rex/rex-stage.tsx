@@ -354,12 +354,15 @@ export function RexStage({
         );
       })}
 
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-px animate-[scan_9s_linear_infinite] bg-gradient-to-r from-transparent via-teal-bright/25 to-transparent" />
       <div className="pointer-events-none absolute bottom-1 right-2 flex items-end gap-2 md:bottom-2 md:right-4">
-        <RexCharacter
-          pose={rexPose}
-          expression={rexExpression}
-          className={compact ? "h-[220px] w-auto md:h-[260px]" : "h-[260px] w-auto md:h-[390px]"}
-        />
+        <div className="animate-[drift_7s_ease-in-out_infinite]">
+          <RexCharacter
+            pose={rexPose}
+            expression={rexExpression}
+            className={compact ? "h-[220px] w-auto md:h-[260px]" : "h-[260px] w-auto md:h-[390px]"}
+          />
+        </div>
       </div>
       <div className="pointer-events-none absolute bottom-25 left-4 hidden md:block">
         <p className="font-mono text-[7px] uppercase tracking-[0.15em] text-muted/60">

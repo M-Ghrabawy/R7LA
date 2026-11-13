@@ -129,7 +129,14 @@ export function ExplorerExperience({
           </h1>
           <p className="mt-4 max-w-xl text-sm leading-7 text-muted">
             Select a world, then locate an artifact. All positions are plotted
-            from cited coordinates; approximate sites are disclosed.
+            from cited coordinates; approximate sites are disclosed.{" "}
+            <Link
+              href="/catalog"
+              className="text-teal-bright underline decoration-teal/30 underline-offset-2 hover:text-gold"
+            >
+              Browse the extended NASA catalogue
+            </Link>
+            .
           </p>
         </div>
         <div className="grid grid-cols-3 border border-line/70">
