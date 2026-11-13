@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 const nav = [
   { href: "/", label: "Observatory" },
   { href: "/explore", label: "Explore" },
+  { href: "/rex", label: "REX" },
   { href: "/timeline", label: "Timeline" },
   { href: "/evidence", label: "Evidence" },
   { href: "/legacy", label: "Legacy" },

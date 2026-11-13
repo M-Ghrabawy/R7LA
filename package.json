@@ -9,6 +9,8 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "validate:data": "tsx scripts/validate-data.ts",
+    "check:sources": "tsx scripts/check-sources.ts",
+    "ingest:nasa": "tsx scripts/ingest-nasa-images.ts",
     "check": "npm run typecheck && npm run lint && npm run validate:data",
     "smoke": "node scripts/smoke-test.mjs"
   },

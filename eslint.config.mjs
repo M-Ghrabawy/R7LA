@@ -12,6 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    ".tmp/**",
+    ".npm-cache/**",
+    "public/nasa/source-manifest.json",
   ]),
 ]);
 

@@ -101,7 +101,7 @@ export function ObservatoryExperience({
               <span className="absolute inline-flex size-full animate-ping rounded-full bg-teal-bright opacity-40" />
               <span className="relative inline-flex size-2 rounded-full bg-teal-bright" />
             </span>
-            Archive status / verified
+            REX online / archive verified
             <span className="hidden h-px w-12 bg-line-bright sm:block" />
             <span className="hidden text-silver/60 sm:block">
               Lat 0.674° N · Lon 23.473° E
@@ -167,11 +167,11 @@ export function ObservatoryExperience({
                 <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
               </Link>
               <Link
-                href="/archaeologist"
+                href="/rex"
                 className="inline-flex min-h-12 items-center gap-2 border border-line-bright bg-abyss/50 px-5 py-4 font-mono text-[10px] uppercase tracking-[0.14em] text-silver transition-colors hover:border-teal-bright hover:text-white"
               >
                 <Radio className="size-4 text-teal-bright" />
-                Ask the archaeologist
+                Begin REX briefing
               </Link>
             </div>
             <p className="mt-5 font-mono text-[8px] uppercase tracking-[0.14em] text-muted">
@@ -244,9 +244,14 @@ export function ObservatoryExperience({
               <Stat icon={<Layers3 />} label="Missions" value={String(stats.missions).padStart(2, "0")} />
               <Stat icon={<Crosshair />} label="Still detectable" value={String(stats.active).padStart(2, "0")} />
             </div>
-            <p className="mt-4 flex items-center gap-2 font-mono text-[8px] uppercase tracking-[0.14em] text-muted/70">
-              <ArrowDown className="size-3 text-gold" />
-              Scroll to descend into the archive
+            <p className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 font-mono text-[8px] uppercase tracking-[0.14em] text-muted/70">
+              <span className="flex items-center gap-2">
+                <ArrowDown className="size-3 text-gold" />
+                Scroll to descend into the archive
+              </span>
+              <span className="text-muted/50">
+                Surface rendering / procedural AFTERLIGHT visualization
+              </span>
             </p>
           </div>
 

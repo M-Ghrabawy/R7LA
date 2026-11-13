@@ -26,6 +26,7 @@ import {
 import { SourceLinks, InlineSources } from "@/components/shared/source-list";
 import { AIArtworkDisclosure } from "@/components/shared/disclosures";
 import { SchematicViewer } from "@/components/three/schematic-viewer";
+import { RexDiscoveryLog } from "@/components/rex/rex-discovery-log";
 import { liveProviderConfigured } from "@/lib/ai";
 import {
   computeLegacyTotal,
@@ -204,6 +205,10 @@ export default async function RelicPage({
             accent
           />
         </div>
+      </div>
+
+      <div className="mx-auto max-w-[1600px] px-5 pb-4 md:px-8">
+        <RexDiscoveryLog relic={relic} />
       </div>
 
       <section className="border-y border-line/60 bg-void/30">

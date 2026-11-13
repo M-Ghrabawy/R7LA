@@ -4,7 +4,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import {
   ArrowUp,
-  Bot,
   ExternalLink,
   GraduationCap,
   LoaderCircle,
@@ -14,6 +13,7 @@ import {
   UserRound,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { RexHead } from "@/components/rex/rex-character";
 
 type ArtifactOption = {
   id: string;
@@ -65,9 +65,9 @@ const questions = [
 
 function greetingFor(artifact: ArtifactOption | undefined) {
   if (!artifact) {
-    return "I am the SPACE RELICS archive assistant. Select an object and ask about its purpose, condition, science, or historical legacy.";
+    return "I am REX, the SPACE RELICS archaeological explorer. Select an object and ask about its purpose, condition, science, or historical legacy.";
   }
-  return `Archive context set to ${artifact.shortName} (${artifact.missionShort}, ${artifact.destination}). Ask about its purpose, operational history, scientific legacy, condition, or what a future visit might mean. I answer only from the cited record.`;
+  return `REX online. Archive context set to ${artifact.shortName} (${artifact.missionShort}, ${artifact.destination}). Ask about its purpose, operational history, scientific legacy, condition, or what a future visit might mean. I answer only from the cited record.`;
 }
 
 export function AssistantPanel({
@@ -234,14 +234,14 @@ export function AssistantPanel({
       <div className="border-b border-line/70 bg-abyss/55 p-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2.5">
-            <span className="flex size-8 items-center justify-center border border-teal/40 bg-teal/10 text-teal-bright">
-              <Bot className="size-4" />
+            <span className="flex size-10 items-center justify-center border border-teal/40 bg-teal/10">
+              <RexHead className="h-8 w-9" expression="content" />
             </span>
             <div>
               <p className="font-mono text-[8px] uppercase tracking-[0.18em] text-gold">
-                Space archaeologist
+                REX / space archaeologist
               </p>
-              <p className="mt-0.5 text-xs text-silver">Grounded archive assistant</p>
+              <p className="mt-0.5 text-xs text-silver">Grounded archive interface</p>
             </div>
           </div>
           <div
@@ -477,7 +477,7 @@ export function AssistantPanel({
           {lastDisclosure ??
             (liveConfigured
               ? "Live provider is configured. Responses remain grounded in cited archive records."
-              : "Demo knowledge mode: no API key is configured. Responses are generated from the structured archive, not a live LLM.")}
+              : "REX demo mode: no API key is configured. REX is answering from the structured archive, not a live LLM.")}
         </p>
       </div>
     </div>

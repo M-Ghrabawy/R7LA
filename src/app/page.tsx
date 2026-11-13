@@ -12,6 +12,7 @@ import {
   ScanSearch,
 } from "lucide-react";
 import { ObservatoryExperience } from "@/components/observatory/observatory-experience";
+import { RexCharacter } from "@/components/rex/rex-character";
 import { RelicCard } from "@/components/shared/relic-card";
 import { Reveal } from "@/components/shared/reveal";
 import { SectionHeading } from "@/components/shared/section-heading";
@@ -109,6 +110,55 @@ export default function HomePage() {
               span="1976 — PRESENT"
               description="Seven landers and rovers spanning the first successful Mars landing to the sample-caching missions now working in Jezero Crater."
             />
+          </div>
+        </div>
+      </section>
+
+      <section className="border-y border-line/60 bg-[radial-gradient(ellipse_at_18%_50%,rgba(11,122,143,.12),transparent_50%)]">
+        <div className="mx-auto grid max-w-[1600px] gap-8 px-5 py-16 md:px-8 md:py-20 lg:grid-cols-12 lg:items-center">
+          <div className="lg:col-span-4">
+            <div className="relative flex justify-center">
+              <div className="absolute inset-8 rounded-full border border-teal/15" />
+              <div className="absolute inset-14 rounded-full border border-dashed border-line-bright/40" />
+              <RexCharacter
+                pose="point"
+                expression="excited"
+                className="relative h-[260px] w-auto md:h-[340px]"
+              />
+            </div>
+          </div>
+          <div className="lg:col-span-8">
+            <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-gold">
+              REX / autonomous archaeological explorer
+            </p>
+            <h2 className="mt-4 max-w-3xl text-balance text-4xl font-medium leading-[1.02] tracking-[-0.045em] text-white md:text-6xl">
+              Not treasure.
+              <span className="text-teal-bright"> Knowledge.</span>
+            </h2>
+            <p className="mt-5 max-w-2xl text-sm leading-7 text-muted">
+              REX is an original fictional archive guide built by AFTERLIGHT. It
+              explores the Moon and Mars through five interactive chapters,
+              investigates any relic on request, and asks what humanity should
+              preserve for the future.
+            </p>
+            <div className="mt-7 flex flex-wrap gap-3">
+              <Link
+                href="/rex"
+                className="inline-flex items-center gap-3 border border-gold bg-gold px-5 py-3 font-mono text-[9px] uppercase tracking-[0.14em] text-abyss transition-colors hover:bg-[#f2c76a]"
+              >
+                Begin the REX expedition
+                <ArrowRight className="size-3.5" />
+              </Link>
+              <Link
+                href="/archaeologist"
+                className="inline-flex items-center gap-3 border border-line-bright px-5 py-3 font-mono text-[9px] uppercase tracking-[0.14em] text-silver transition-colors hover:border-teal hover:text-teal-bright"
+              >
+                Talk to REX
+              </Link>
+            </div>
+            <p className="mt-4 font-mono text-[7px] uppercase tracking-[0.1em] text-muted/60">
+              Fictional character · interpretive animation · sourced archive
+            </p>
           </div>
         </div>
       </section>

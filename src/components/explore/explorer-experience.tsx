@@ -22,6 +22,7 @@ import {
   OperationalBadge,
   PhysicalBadge,
 } from "@/components/shared/status-badge";
+import { RexHead } from "@/components/rex/rex-character";
 import { PlanetMap } from "@/components/shared/planet-map";
 import {
   ObservatoryCanvas,
@@ -366,7 +367,7 @@ export function ExplorerExperience({
               </div>
             </div>
             <p className="pointer-events-none absolute bottom-3 left-3 font-mono text-[7px] uppercase tracking-[0.12em] text-muted/70">
-              Drag to orbit / select marker
+              Procedural surface / drag to orbit / select marker
             </p>
           </div>
 
@@ -418,6 +419,20 @@ export function ExplorerExperience({
                 {selected.summary}
               </p>
 
+              {selected.rexNote && (
+                <div className="mt-4 flex gap-2.5 border border-teal/25 bg-teal/[0.035] p-3">
+                  <RexHead className="h-9 w-11 shrink-0" expression="curious" />
+                  <div>
+                    <p className="font-mono text-[7px] uppercase tracking-[0.13em] text-teal-bright">
+                      REX / field note
+                    </p>
+                    <p className="mt-1 line-clamp-3 text-[11px] leading-5 text-muted">
+                      {selected.rexNote}
+                    </p>
+                  </div>
+                </div>
+              )}
+
               <div className="mt-5 space-y-2 border-y border-line/60 py-4">
                 <DataRow label="Location" value={selected.coordinatesLabel} />
                 <DataRow
@@ -460,6 +475,13 @@ export function ExplorerExperience({
               >
                 Investigate this relic
                 <ArrowRight className="size-3.5" />
+              </Link>
+              <Link
+                href={`/rex/relic/${selected.id}`}
+                className="mt-2 flex items-center justify-between border border-teal/40 px-4 py-2.5 font-mono text-[8px] uppercase tracking-[0.12em] text-teal-bright transition-colors hover:border-teal hover:text-white"
+              >
+                REX field study
+                <ArrowRight className="size-3" />
               </Link>
               <p className="mt-3 flex items-center gap-1.5 font-mono text-[7px] uppercase tracking-[0.1em] text-muted/70">
                 <Crosshair className="size-2.5" />

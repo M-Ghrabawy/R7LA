@@ -1,3 +1,4 @@
+import { discoveryLogsByRelic } from "@/data/rex/discovery-logs";
 import type { ResolvedArtifact } from "./schema";
 
 export type SceneRelic = {
@@ -13,6 +14,7 @@ export type SceneRelic = {
   coordinatesLabel: string;
   landingDate: string;
   summary: string;
+  rexNote: string;
   imageSrc: string;
   imageAlt: string;
   legacyScore: number;
@@ -37,6 +39,7 @@ export function toSceneRelic(
     coordinatesLabel: relic.coordinates.label,
     landingDate: relic.landingDate,
     summary: relic.description,
+    rexNote: discoveryLogsByRelic.get(relic.id)?.opening ?? "",
     imageSrc: relic.images[0].src,
     imageAlt: relic.images[0].alt,
     legacyScore,

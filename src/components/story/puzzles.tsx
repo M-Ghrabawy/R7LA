@@ -1,0 +1,374 @@
+"use client";
+
+import { useMemo, useState } from "react";
+import { Check, CircleHelp, RotateCcw, X } from "lucide-react";
+import type { Puzzle } from "@/lib/story/schema";
+import { cn } from "@/lib/utils";
+
+type Sound = "click" | "success" | "error" | "reveal";
+
+function Hint({ text }: { text: string }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="mt-3">
+      <button
+        onClick={() => setOpen((value) => !value)}
+        className="inline-flex items-center gap-1.5 font-mono text-[7px] uppercase tracking-[0.1em] text-muted transition-colors hover:text-gold"
+      >
+        <CircleHelp className="size-3" />
+        {open ? "Hide hint" : "Request hint"}
+      </button>
+      {open && (
+        <p className="mt-2 border-l border-gold/40 pl-3 text-[11px] leading-5 text-muted">
+          {text}
+        </p>
+      )}
+    </div>
+  );
+}
+
+export function PuzzlePanel({
+  puzzle,
+  solved,
+  onSolved,
+  play,
+  compact = false,
+}: {
+  puzzle: Exclude<Puzzle, { type: "hotspot" }>;
+  solved: boolean;
+  onSolved: () => void;
+  play: (sound: Sound) => void;
+  compact?: boolean;
+}) {
+  if (puzzle.type === "sequence") {
+    return (
+      <SequencePuzzle
+        puzzle={puzzle}
+        solved={solved}
+        onSolved={onSolved}
+        play={play}
+        compact={compact}
+      />
+    );
+  }
+  if (puzzle.type === "classify") {
+    return (
+      <ClassifyPuzzle
+        puzzle={puzzle}
+        solved={solved}
+        onSolved={onSolved}
+        play={play}
+        compact={compact}
+      />
+    );
+  }
+  return (
+    <ChoicePuzzle
+      puzzle={puzzle}
+      solved={solved}
+      onSolved={onSolved}
+      play={play}
+      compact={compact}
+    />
+  );
+}
+
+function Frame({
+  prompt,
+  children,
+  feedback,
+  solved,
+  hint,
+}: {
+  prompt: string;
+  children: React.ReactNode;
+  feedback: string;
+  solved: boolean;
+  hint: string;
+}) {
+  return (
+    <div className="border border-line/70 bg-panel/30 p-4">
+      <p className="font-mono text-[8px] uppercase tracking-[0.14em] text-gold">
+        Interaction / {solved ? "verified" : "in progress"}
+      </p>
+      <p className="mt-2 text-sm leading-6 text-silver">{prompt}</p>
+      <div className="mt-4">{children}</div>
+      {feedback && (
+        <p
+          className={cn(
+            "mt-3 border p-2.5 font-mono text-[8px] uppercase leading-5 tracking-[0.08em]",
+            solved
+              ? "border-teal/40 bg-teal/5 text-teal-bright"
+              : "border-[#c9867c]/40 bg-[#c9867c]/5 text-[#dba197]",
+          )}
+        >
+          {feedback}
+        </p>
+      )}
+      {!solved && <Hint text={hint} />}
+    </div>
+  );
+}
+
+function SequencePuzzle({
+  puzzle,
+  solved,
+  onSolved,
+  play,
+  compact,
+}: {
+  puzzle: Extract<Puzzle, { type: "sequence" }>;
+  solved: boolean;
+  onSolved: () => void;
+  play: (sound: Sound) => void;
+  compact: boolean;
+}) {
+  const [selected, setSelected] = useState<string[]>([]);
+  const [feedback, setFeedback] = useState("");
+
+  const check = (next: string[]) => {
+    if (next.length !== puzzle.answer.length) return;
+    if (next.every((id, index) => id === puzzle.answer[index])) {
+      play("success");
+      setFeedback(puzzle.success);
+      onSolved();
+    } else {
+      play("error");
+      setFeedback("Sequence mismatch. Use the dated archive record and try again.");
+    }
+  };
+
+  return (
+    <Frame
+      prompt={puzzle.prompt}
+      feedback={feedback}
+      solved={solved}
+      hint={puzzle.hint}
+    >
+      <ol className={cn("space-y-1.5", compact && "space-y-1")}>
+        {puzzle.items.map((item) => {
+          const position = selected.indexOf(item.id);
+          return (
+            <li key={item.id}>
+              <button
+                disabled={solved || position >= 0}
+                onClick={() => {
+                  play("click");
+                  const next = [...selected, item.id];
+                  setSelected(next);
+                  setFeedback("");
+                  check(next);
+                }}
+                className={cn(
+                  "flex w-full items-center gap-3 border px-3 py-2 text-left text-xs transition-colors",
+                  position >= 0
+                    ? "border-gold/40 bg-gold/[0.04] text-gold"
+                    : "border-line/60 text-silver/80 hover:border-teal/40 hover:text-white",
+                )}
+              >
+                <span className="font-mono text-[8px] text-muted">
+                  {position >= 0 ? String(position + 1).padStart(2, "0") : "··"}
+                </span>
+                {item.label}
+                {position >= 0 && <Check className="ml-auto size-3" />}
+              </button>
+            </li>
+          );
+        })}
+      </ol>
+      {!solved && selected.length > 0 && (
+        <button
+          onClick={() => {
+            play("click");
+            setSelected([]);
+            setFeedback("");
+          }}
+          className="mt-3 inline-flex items-center gap-1.5 font-mono text-[7px] uppercase tracking-[0.1em] text-muted hover:text-gold"
+        >
+          <RotateCcw className="size-3" /> Reset sequence
+        </button>
+      )}
+    </Frame>
+  );
+}
+
+function ClassifyPuzzle({
+  puzzle,
+  solved,
+  onSolved,
+  play,
+  compact,
+}: {
+  puzzle: Extract<Puzzle, { type: "classify" }>;
+  solved: boolean;
+  onSolved: () => void;
+  play: (sound: Sound) => void;
+  compact: boolean;
+}) {
+  const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [feedback, setFeedback] = useState("");
+  const assigned = Object.keys(answers).length;
+
+  const submit = () => {
+    const correct = puzzle.items.every(
+      (item) => answers[item.id] === item.answer,
+    );
+    if (correct) {
+      play("success");
+      setFeedback(puzzle.success);
+      onSolved();
+    } else {
+      play("error");
+      setFeedback("One or more classifications are incorrect. Review the record.");
+    }
+  };
+
+  return (
+    <Frame
+      prompt={puzzle.prompt}
+      feedback={feedback}
+      solved={solved}
+      hint={puzzle.hint}
+    >
+      <div className={cn("space-y-2", compact && "space-y-1.5")}>
+        {puzzle.items.map((item) => (
+          <div
+            key={item.id}
+            className="flex flex-col gap-2 border border-line/50 p-2.5 md:flex-row md:items-center"
+          >
+            <span className="flex-1 text-xs leading-5 text-silver/80">
+              {item.label}
+            </span>
+            <div className="flex flex-wrap gap-1">
+              {puzzle.buckets.map((bucket) => {
+                const active = answers[item.id] === bucket.id;
+                const correct =
+                  solved && item.answer === bucket.id;
+                return (
+                  <button
+                    key={bucket.id}
+                    disabled={solved}
+                    onClick={() => {
+                      play("click");
+                      setAnswers((current) => ({
+                        ...current,
+                        [item.id]: bucket.id,
+                      }));
+                      setFeedback("");
+                    }}
+                    className={cn(
+                      "border px-2 py-1.5 font-mono text-[7px] uppercase tracking-[0.08em] transition-colors",
+                      correct
+                        ? "border-teal bg-teal/10 text-teal-bright"
+                        : active
+                          ? "border-gold bg-gold/10 text-gold"
+                          : "border-line/60 text-muted hover:border-line-bright hover:text-silver",
+                    )}
+                  >
+                    {bucket.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+      </div>
+      {!solved && (
+        <button
+          onClick={submit}
+          disabled={assigned !== puzzle.items.length}
+          className="mt-3 inline-flex items-center gap-2 border border-gold/60 bg-gold/10 px-3 py-2 font-mono text-[8px] uppercase tracking-[0.12em] text-gold disabled:border-line disabled:bg-transparent disabled:text-muted"
+        >
+          <Check className="size-3" />
+          Verify classification
+        </button>
+      )}
+    </Frame>
+  );
+}
+
+function ChoicePuzzle({
+  puzzle,
+  solved,
+  onSolved,
+  play,
+  compact,
+}: {
+  puzzle: Extract<Puzzle, { type: "choice" }>;
+  solved: boolean;
+  onSolved: () => void;
+  play: (sound: Sound) => void;
+  compact: boolean;
+}) {
+  const [selected, setSelected] = useState<string | null>(null);
+  const [feedback, setFeedback] = useState("");
+  const wrong = useMemo(
+    () => selected !== null && selected !== puzzle.answer,
+    [puzzle.answer, selected],
+  );
+
+  return (
+    <Frame
+      prompt={puzzle.prompt}
+      feedback={feedback}
+      solved={solved}
+      hint={puzzle.hint}
+    >
+      <div className={cn("space-y-2", compact && "space-y-1.5")}>
+        {puzzle.options.map((option) => {
+          const active = selected === option.id;
+          const correct = solved && option.id === puzzle.answer;
+          return (
+            <button
+              key={option.id}
+              disabled={solved}
+              onClick={() => {
+                play("click");
+                setSelected(option.id);
+                if (option.id === puzzle.answer) {
+                  play("success");
+                  setFeedback(puzzle.success);
+                  onSolved();
+                } else {
+                  play("error");
+                  setFeedback("That interpretation does not match the archive record.");
+                }
+              }}
+              className={cn(
+                "w-full border p-3 text-left transition-colors",
+                correct
+                  ? "border-teal bg-teal/10"
+                  : active && wrong
+                    ? "border-[#c9867c] bg-[#c9867c]/5"
+                    : "border-line/60 hover:border-teal/40 hover:bg-teal/[0.03]",
+              )}
+            >
+              <span className="flex items-start gap-2">
+                <span
+                  className={cn(
+                    "mt-0.5 flex size-4 shrink-0 items-center justify-center border",
+                    correct
+                      ? "border-teal text-teal-bright"
+                      : active
+                        ? "border-gold text-gold"
+                        : "border-line text-transparent",
+                  )}
+                >
+                  {correct ? <Check className="size-2.5" /> : active && wrong ? <X className="size-2.5" /> : null}
+                </span>
+                <span>
+                  <span className="block text-xs leading-5 text-silver">
+                    {option.label}
+                  </span>
+                  <span className="mt-1 block text-[10px] leading-4 text-muted">
+                    {option.detail}
+                  </span>
+                </span>
+              </span>
+            </button>
+          );
+        })}
+      </div>
+    </Frame>
+  );
+}

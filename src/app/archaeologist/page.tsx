@@ -6,7 +6,7 @@ import { liveProviderConfigured } from "@/lib/ai";
 import { getRelic, relics } from "@/lib/data";
 
 export const metadata: Metadata = {
-  title: "AI Space Archaeologist",
+  title: "Talk to REX",
   description:
     "Ask grounded questions about human artifacts on the Moon and Mars. Every answer cites archive records; demo mode works without an API key.",
 };
@@ -36,17 +36,17 @@ export default async function ArchaeologistPage({
             <span className="font-mono text-[9px] text-gold">05</span>
             <span className="h-px w-8 bg-line-bright" />
             <span className="technical-label">
-              AI space archaeologist / grounded interface
+              REX / grounded interface
             </span>
           </div>
           <h1 className="text-balance text-4xl font-medium leading-[0.95] tracking-[-0.05em] text-white md:text-7xl">
-            Ask the archive.
+            Talk to REX.
           </h1>
           <p className="mt-5 max-w-2xl text-sm leading-7 text-muted md:text-base">
-            A conversational research assistant for the physical record of
-            exploration. Select a relic and ask why it was left behind, what it
-            discovered, or whether it still matters. Answers are limited to the
-            cited archive record.
+            REX is the fictional expedition guide and conversational interface
+            for the physical record of exploration. Select a relic and ask why
+            it was left behind, what it discovered, or whether it still matters.
+            Answers are limited to the cited archive record.
           </p>
         </div>
         <div className="lg:col-span-4">

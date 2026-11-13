@@ -29,7 +29,7 @@ export default function TimelinePage() {
           <div className="mb-4 flex items-center gap-3">
             <span className="font-mono text-[9px] text-gold">03</span>
             <span className="h-px w-8 bg-line-bright" />
-            <span className="technical-label">Mission timeline / chronology</span>
+            <span className="technical-label">Mission timeline / REX reconstruction</span>
           </div>
           <h1 className="text-balance text-4xl font-medium leading-none tracking-[-0.045em] text-white md:text-7xl">
             Five decades

@@ -264,13 +264,20 @@ export default function AboutPage() {
               AI disclosure
             </p>
             <p className="mt-4 text-[12px] leading-6 text-muted">
-              The AI Space Archaeologist is an optional conversational layer over
-              this archive. Without an API key, it runs in a deterministic demo
-              mode that generates answers from structured records; no LLM is
-              running. When a live provider is configured, the interface labels
-              that mode. In all cases, answers are constrained to archive
-              context, citations resolve to stored sources, and hypothetical
-              statements are marked. The AI does not create citations.
+              REX is a fictional AFTERLIGHT archive guide and the conversational
+              interface over this archive. Without an API key, the assistant runs
+              in a deterministic REX demo mode that generates answers from
+              structured records; no LLM is running. When a live provider is
+              configured, the interface labels that mode. In all cases, answers
+              are constrained to archive context, citations resolve to stored
+              sources, and hypothetical statements are marked. The AI does not
+              create citations. REX is not a NASA robot or agency system.
+            </p>
+            <p className="mt-3 font-mono text-[8px] uppercase leading-5 tracking-[0.1em] text-muted/60">
+              The five-chapter expedition, vector scenes, and REX dialogue are
+              interpretive fiction built around sourced records. Ambient audio
+              and interface cues are synthesized in the browser and muted until
+              the visitor enables sound.
             </p>
             <p className="mt-3 font-mono text-[8px] uppercase leading-5 tracking-[0.1em] text-muted/60">
               Demo mode is not a simulation of a live model. It is plainly
@@ -304,6 +311,16 @@ export default function AboutPage() {
                 → The archive is not a live mission-status feed. Active status is
                 recorded from cited mission material and should be checked
                 against current NASA updates.
+              </li>
+              <li>
+                → REX, its dialogue, and the vector field scenes are original
+                fictional interfaces, not NASA mission records or recovered
+                telemetry.
+              </li>
+              <li>
+                → Story puzzles are educational reconstructions. They are not
+                official simulations of mission operations or engineering
+                systems.
               </li>
             </ul>
           </div>

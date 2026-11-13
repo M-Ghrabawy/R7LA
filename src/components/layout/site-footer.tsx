@@ -4,6 +4,7 @@ import { Wordmark } from "@/components/brand/logo";
 
 const archiveLinks = [
   { href: "/explore", label: "Planet Explorer" },
+  { href: "/rex", label: "REX Expedition" },
   { href: "/timeline", label: "Mission Timeline" },
   { href: "/evidence", label: "Evidence Chain" },
   { href: "/legacy", label: "Legacy Assessment" },
