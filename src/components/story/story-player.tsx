@@ -387,13 +387,6 @@ export function StoryPlayer({
                 <p className="mt-1 text-[11px] leading-5 text-muted">
                   {scene.puzzle.prompt}
                 </p>
-                <button
-                  onClick={() => setAudioPromptDismissed(true)}
-                  className="mt-2 font-mono text-[7px] uppercase tracking-[0.1em] text-muted hover:text-gold"
-                  hidden={foundHotspots.length === 0}
-                >
-                  Continue scanning
-                </button>
                 <details className="mt-2">
                   <summary className="cursor-pointer font-mono text-[7px] uppercase tracking-[0.1em] text-muted hover:text-gold">
                     Request hint

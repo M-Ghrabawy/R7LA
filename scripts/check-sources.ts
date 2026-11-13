@@ -1,5 +1,6 @@
 import { sources } from "../src/lib/data";
 
+async function main() {
 const concurrency = 6;
 let cursor = 0;
 const failures: Array<{ id: string; url: string; status: string }> = [];
@@ -69,3 +70,9 @@ if (failures.length > 0) {
 }
 
 console.log(`\nAll ${sources.length} source links responded successfully.`);
+}
+
+main().catch((error) => {
+  console.error(error);
+  process.exit(1);
+});

@@ -91,6 +91,7 @@ export function ObservatoryExperience({
       </div>
 
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(3,10,16,.96)_0%,rgba(3,10,16,.72)_27%,rgba(3,10,16,.08)_58%,rgba(3,10,16,.28)_100%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(3,10,16,.82),rgba(3,10,16,.58)_45%,rgba(3,10,16,.9))] md:hidden" />
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(3,10,16,.55),transparent_22%,transparent_72%,rgba(3,10,16,.94))]" />
       <div className="grain pointer-events-none absolute inset-0" />
 

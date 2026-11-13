@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, type ComponentRef } from "react";
+import { useEffect, useMemo, useRef, type ComponentRef } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Billboard, Html, OrbitControls } from "@react-three/drei";
+import { Billboard, OrbitControls } from "@react-three/drei";
 import gsap from "gsap";
 import { useReducedMotion } from "framer-motion";
 import * as THREE from "three";
@@ -118,7 +118,6 @@ function ArtifactMarker({
   selected: boolean;
   onSelect: (id: string) => void;
 }) {
-  const [hovered, setHovered] = useState(false);
   const color = useMarkerColor(relic);
   const position = useMemo(
     () => latLonToVector3(relic.latitude, relic.longitude, 2.08),
@@ -159,11 +158,9 @@ function ArtifactMarker({
       }}
       onPointerOver={(event) => {
         event.stopPropagation();
-        setHovered(true);
         document.body.style.cursor = "pointer";
       }}
       onPointerOut={() => {
-        setHovered(false);
         document.body.style.cursor = "";
       }}
     >
@@ -200,29 +197,6 @@ function ArtifactMarker({
           </mesh>
         )}
       </Billboard>
-      {(hovered || selected) && (
-        <Html
-          center
-          position={[0, 0.22, 0]}
-          distanceFactor={7}
-          zIndexRange={[20, 0]}
-          style={{ pointerEvents: "none" }}
-        >
-          <div className="w-max max-w-[190px] border border-line-bright bg-abyss/95 px-3 py-2 shadow-[0_8px_30px_rgba(0,0,0,.45)]">
-            <p className="font-mono text-[7px] uppercase tracking-[0.18em] text-gold">
-              {relic.missionShort} / {relic.destination}
-            </p>
-            <p className="mt-1 text-[11px] leading-tight text-white">
-              {relic.shortName}
-            </p>
-            {selected && (
-              <p className="mt-1 font-mono text-[7px] uppercase tracking-[0.12em] text-muted">
-                Investigate below
-              </p>
-            )}
-          </div>
-        </Html>
-      )}
     </group>
   );
 }
