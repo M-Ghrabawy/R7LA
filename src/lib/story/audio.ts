@@ -8,7 +8,8 @@ type SoundName =
   | "reveal"
   | "boot"
   | "transmit"
-  | "complete";
+  | "complete"
+  | "brush";
 
 const themes: Record<
   AudioTheme,
@@ -191,6 +192,7 @@ export class RexAudioEngine {
       boot: { frequency: 110, end: 660, duration: 0.9, gain: 0.045, type: "sine" },
       transmit: { frequency: 660, end: 1320, duration: 0.6, gain: 0.035, type: "sine" },
       complete: { frequency: 330, end: 990, duration: 1.2, gain: 0.045, type: "triangle" },
+      brush: { frequency: 130, end: 90, duration: 0.08, gain: 0.012, type: "sawtooth" },
     };
     const preset = config[name];
     const oscillator = context.createOscillator();

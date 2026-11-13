@@ -70,7 +70,8 @@ export function useRexAudio(theme: AudioTheme) {
         | "reveal"
         | "boot"
         | "transmit"
-        | "complete",
+        | "complete"
+        | "brush",
     ) => {
       if (!enabled) return;
       getRexAudio().sfx(sound);

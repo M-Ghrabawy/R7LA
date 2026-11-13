@@ -79,7 +79,7 @@ export const fieldStudies: FieldStudy[] = relics.map((relic) => {
             hint: "Two strong returns are inside the 25–70 Hz band. Sweep slowly and scan each peak.",
             success:
               "Artifact signature resolved. The surface record is now linked to the archive entry.",
-            tolerance: 7,
+            tolerance: 10,
             targets: [
               {
                 id: `${relic.id}-shell`,
@@ -127,6 +127,55 @@ export const fieldStudies: FieldStudy[] = relics.map((relic) => {
         audioTheme,
       },
       scanScene,
+      {
+        id: `${relic.id}-excavate`,
+        kind: "puzzle",
+        eyebrow: "Dust table / context recovery",
+        title: "Expose the relationships.",
+        dialogue: [
+          "The artifact is not the only record. The dust around it preserves the geometry of the site.",
+          "I am switching to a low-pressure brush. Clear the sediment around the hardware and its surface trace, without erasing the context.",
+          log.question,
+        ],
+        rexPose: "inspect",
+        rexExpression: "focused",
+        background,
+        props: diagnosticProps,
+        artifactIds: [relic.id],
+        sourceIds: observationSourceIds,
+        audioTheme,
+        puzzle: {
+          type: "excavation",
+          prompt: "Clear sediment / preserve context",
+          hint: "Brush slowly around the hardware and the surface trace. Use the guided brush only if the canvas is difficult to control.",
+          success:
+            "Site context recovered. The object and its surroundings are now linked in the field record.",
+          zones: [
+            {
+              id: `${relic.id}-hardware`,
+              label: "Hardware layer",
+              detail:
+                log.observations[0]?.text ?? relic.description,
+              x: 33,
+              y: 66,
+              radius: 16,
+              sourceIds:
+                log.observations[0]?.sourceIds ?? relic.sourceIds,
+            },
+            {
+              id: `${relic.id}-context`,
+              label: "Surface context",
+              detail:
+                log.observations[1]?.text ?? relic.currentCondition,
+              x: 66,
+              y: 73,
+              radius: 17,
+              sourceIds:
+                log.observations[1]?.sourceIds ?? relic.sourceIds,
+            },
+          ],
+        },
+      },
       {
         id: `${relic.id}-reconstruct`,
         kind: "puzzle",

@@ -10,6 +10,7 @@ const routes = [
   "/archaeologist",
   "/about",
   "/rex",
+  "/rex/journal",
   "/rex/chapter/the-departure",
   "/rex/chapter/silent-footprints",
   "/rex/chapter/the-forgotten-journey",

@@ -63,9 +63,12 @@ Five interactive chapters:
 4. **What Remains**
 5. **A Message to Tomorrow**
 
-Plus **14 field studies**, one for every relic. Moon field studies include four scenes and the redesigned lunar chapter includes spectrum scanning and laser-link alignment interactions.
+Plus **14 field studies**, one for every relic. Moon field studies now include five scenes, and the expanded lunar chapter includes spectrum scanning, dust-table excavation, laser-link alignment, and new ALSEP and Surveyor 3 scenes.
 
 Story features:
+
+- **Dust Table excavation:** brush away lunar sediment, expose footpads and experiment hardware, and preserve site relationships.
+- **REX Field Journal:** completed scenes and discoveries persist locally at `/rex/journal` with source links.
 
 - Consistent original blue-and-white SVG REX character, based on the supplied reference, **without the cape and without reproducing the NASA logo**.
 - Reusable vector landscapes, artifact props, character poses, expressions, and scene transitions.
@@ -112,6 +115,7 @@ Story features:
 | `/rex` | Five-chapter expedition hub |
 | `/rex/chapter/[slug]` | Playable REX chapter |
 | `/rex/relic/[id]` | Playable relic field study |
+| `/rex/journal` | Locally stored REX field journal |
 | `/about` | Methodology, attribution, AI and fiction disclosures |
 | `/api/assistant` | Grounded assistant endpoint |
 | `/api/health` | Health check |

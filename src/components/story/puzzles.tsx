@@ -3,9 +3,10 @@
 import { useMemo, useState } from "react";
 import { Check, CircleHelp, RotateCcw, X } from "lucide-react";
 import type { Puzzle } from "@/lib/story/schema";
+import { ExcavationPuzzle } from "./excavation-puzzle";
 import { cn } from "@/lib/utils";
 
-type Sound = "click" | "success" | "error" | "reveal";
+type Sound = "click" | "success" | "error" | "reveal" | "brush";
 
 function Hint({ text }: { text: string }) {
   const [open, setOpen] = useState(false);
@@ -65,6 +66,16 @@ export function PuzzlePanel({
   if (puzzle.type === "scan") {
     return (
       <ScanPuzzle
+        puzzle={puzzle}
+        solved={solved}
+        onSolved={onSolved}
+        play={play}
+      />
+    );
+  }
+  if (puzzle.type === "excavation") {
+    return (
+      <ExcavationPuzzle
         puzzle={puzzle}
         solved={solved}
         onSolved={onSolved}
@@ -318,31 +329,55 @@ function ScanPuzzle({
   onSolved: () => void;
   play: (sound: Sound) => void;
 }) {
-  const [frequency, setFrequency] = useState(48);
+  const [frequency, setFrequency] = useState(12);
   const [found, setFound] = useState<string[]>([]);
-  const [feedback, setFeedback] = useState("");
+  const [feedback, setFeedback] = useState(
+    "Drag the receiver across the spectrum. Pause when the signal meter peaks.",
+  );
 
-  const scan = () => {
+  const nearest = puzzle.targets.reduce(
+    (best, target) => {
+      const distance = Math.abs(target.frequency - frequency);
+      return distance < best.distance ? { target, distance } : best;
+    },
+    { target: puzzle.targets[0], distance: 100 },
+  );
+  const strength = Math.max(
+    0,
+    Math.round(100 - nearest.distance * (100 / Math.max(20, puzzle.tolerance * 4))),
+  );
+  const inTolerance = nearest.distance <= puzzle.tolerance;
+
+  const revealTargets = (value: number, currentFound: string[]) => {
     const hits = puzzle.targets.filter(
       (target) =>
-        Math.abs(target.frequency - frequency) <= puzzle.tolerance &&
-        !found.includes(target.id),
+        Math.abs(target.frequency - value) <= puzzle.tolerance &&
+        !currentFound.includes(target.id),
     );
-    if (hits.length > 0) {
-      const next = [...found, ...hits.map((hit) => hit.id)];
-      setFound(next);
+    if (hits.length === 0) return currentFound;
+    const next = [...currentFound, ...hits.map((hit) => hit.id)];
+    setFound(next);
+    setFeedback(
+      `Return resolved: ${hits.map((hit) => hit.label).join(", ")}. ${
+        next.length === puzzle.targets.length
+          ? puzzle.success
+          : "Keep sweeping."
+      }`,
+    );
+    play( next.length === puzzle.targets.length ? "success" : "reveal");
+    if (next.length === puzzle.targets.length) onSolved();
+    return next;
+  };
+
+  const updateFrequency = (value: number) => {
+    setFrequency(value);
+    const next = revealTargets(value, found);
+    if (next.length === found.length) {
       setFeedback(
-        `Return detected: ${hits.map((hit) => hit.label).join(", ")}`,
+        strength > 55
+          ? "Signal rising. Hold near this band."
+          : "Background noise. Continue sweeping the receiver.",
       );
-      play("reveal");
-      if (next.length >= puzzle.targets.length) {
-        play("success");
-        setFeedback(puzzle.success);
-        onSolved();
-      }
-    } else {
-      play("error");
-      setFeedback("No coherent return at this frequency. Sweep the band.");
     }
   };
 
@@ -355,6 +390,10 @@ function ScanPuzzle({
     >
       <div className="relative overflow-hidden border border-line/60 bg-[#041018] p-3">
         <div className="absolute inset-x-0 top-0 h-px animate-[scan_3.4s_linear_infinite] bg-gradient-to-r from-transparent via-teal-bright to-transparent opacity-60" />
+        <div
+          className="pointer-events-none absolute inset-y-0 z-10 w-px bg-gold/80 shadow-[0_0_12px_rgba(228,180,76,.65)] transition-[left] duration-150"
+          style={{ left: `${frequency}%` }}
+        />
         <div className="flex h-20 items-end gap-1">
           {Array.from({ length: 32 }).map((_, index) => {
             const level =
@@ -384,30 +423,47 @@ function ScanPuzzle({
           <span>high band</span>
         </div>
       </div>
-      <div className="mt-3 flex items-center gap-3">
-        <input
-          type="range"
-          min={0}
-          max={100}
-          value={frequency}
-          disabled={solved}
-          onChange={(event) => {
-            setFrequency(Number(event.target.value));
-            setFeedback("");
-          }}
-          className="h-1 flex-1 cursor-pointer appearance-none bg-line-bright accent-gold"
-          aria-label="Scan frequency"
-        />
-        <span className="w-10 text-right font-mono text-[8px] text-teal-bright">
-          {frequency}Hz
-        </span>
-        <button
-          onClick={scan}
-          disabled={solved}
-          className="border border-teal/40 bg-teal/10 px-2.5 py-2 font-mono text-[7px] uppercase tracking-[0.1em] text-teal-bright hover:border-teal disabled:opacity-40"
-        >
-          Scan
-        </button>
+      <div className="mt-3">
+        <div className="flex items-center gap-3">
+          <input
+            type="range"
+            min={0}
+            max={100}
+            value={frequency}
+            disabled={solved}
+            onChange={(event) => updateFrequency(Number(event.target.value))}
+            className="h-1 flex-1 cursor-pointer appearance-none bg-line-bright accent-gold"
+            aria-label="Scan frequency"
+          />
+          <span className="w-12 text-right font-mono text-[8px] text-teal-bright">
+            {frequency} Hz
+          </span>
+        </div>
+        <div className="mt-2 flex items-center gap-2">
+          <span className="font-mono text-[6px] uppercase tracking-[0.1em] text-muted">
+            Signal
+          </span>
+          <div className="h-1.5 flex-1 bg-line/60">
+            <div
+              className={cn(
+                "h-full transition-all",
+                inTolerance ? "bg-gold" : "bg-teal-bright/70",
+              )}
+              style={{ width: `${strength}%` }}
+            />
+          </div>
+          <span
+            className={cn(
+              "w-14 text-right font-mono text-[7px]",
+              inTolerance ? "text-gold" : "text-muted",
+            )}
+          >
+            {inTolerance ? "contact" : `${strength}%`}
+          </span>
+          <span className="font-mono text-[7px] text-muted">
+            {found.length}/{puzzle.targets.length}
+          </span>
+        </div>
       </div>
       <div className="mt-3 grid grid-cols-2 gap-1.5">
         {puzzle.targets.map((target) => (

@@ -135,6 +135,26 @@ export const scanPuzzleSchema = z.object({
     .min(2),
 });
 
+export const excavationPuzzleSchema = z.object({
+  type: z.literal("excavation"),
+  prompt: z.string().min(1),
+  hint: z.string().min(1),
+  success: z.string().min(1),
+  zones: z
+    .array(
+      z.object({
+        id: z.string().min(1),
+        label: z.string().min(1),
+        detail: z.string().min(1),
+        x: z.number().min(5).max(95),
+        y: z.number().min(5).max(95),
+        radius: z.number().min(5).max(30),
+        sourceIds: z.array(z.string()).min(1),
+      }),
+    )
+    .min(2),
+});
+
 export const signalPuzzleSchema = z.object({
   type: z.literal("signal"),
   prompt: z.string().min(1),
@@ -157,6 +177,7 @@ export const puzzleSchema = z.discriminatedUnion("type", [
   choicePuzzleSchema,
   scanPuzzleSchema,
   signalPuzzleSchema,
+  excavationPuzzleSchema,
 ]);
 
 export const storySceneSchema = z.object({

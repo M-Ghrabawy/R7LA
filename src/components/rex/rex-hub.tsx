@@ -11,6 +11,7 @@ import {
   Headphones,
   LockKeyhole,
   Map,
+  NotebookPen,
   Volume2,
 } from "lucide-react";
 import {
@@ -18,6 +19,11 @@ import {
   getProgressSnapshot,
   subscribeProgress,
 } from "@/lib/story/progress";
+import {
+  emptyJournal,
+  getJournalSnapshot,
+  subscribeJournal,
+} from "@/lib/story/journal";
 import { cn } from "@/lib/utils";
 import { RexCharacter, RexHead } from "@/components/rex/rex-character";
 
@@ -53,6 +59,11 @@ export function RexHub({
     subscribeProgress,
     getProgressSnapshot,
     () => emptyProgress,
+  );
+  const journal = useSyncExternalStore(
+    subscribeJournal,
+    getJournalSnapshot,
+    () => emptyJournal,
   );
   const [world, setWorld] = useState<"all" | "Moon" | "Mars">("all");
 
@@ -212,6 +223,55 @@ export function RexHub({
             );
           })}
         </div>
+      </section>
+
+      <section className="mt-12 border border-teal/25 bg-teal/[0.025] p-5 md:p-6">
+        <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
+          <div className="flex items-start gap-4">
+            <RexHead className="h-14 w-16 shrink-0" expression="content" />
+            <div>
+              <p className="font-mono text-[8px] uppercase tracking-[0.16em] text-teal-bright">
+                REX field journal / {journal.length} entries
+              </p>
+              <h2 className="mt-2 text-xl font-medium tracking-[-0.03em] text-white md:text-2xl">
+                Discoveries now leave a trace.
+              </h2>
+              <p className="mt-2 max-w-xl text-xs leading-5 text-muted">
+                Completed interactions and expeditions are recorded locally with
+                their source references, then linked back into the archive.
+              </p>
+            </div>
+          </div>
+          <Link
+            href="/rex/journal"
+            className="inline-flex shrink-0 items-center gap-2 border border-gold/50 bg-gold/[0.06] px-4 py-3 font-mono text-[8px] uppercase tracking-[0.12em] text-gold transition-colors hover:border-gold hover:bg-gold/10"
+          >
+            <NotebookPen className="size-3.5" />
+            Open field journal
+          </Link>
+        </div>
+        {journal.length > 0 && (
+          <div className="mt-4 grid gap-1.5 border-t border-teal/20 pt-4 md:grid-cols-3">
+            {journal.slice(0, 3).map((entry) => (
+              <Link
+                key={entry.id}
+                href="/rex/journal"
+                className="group border border-line/50 bg-void/20 p-3"
+              >
+                <p className="font-mono text-[6px] uppercase tracking-[0.12em] text-muted">
+                  {entry.kind} /{" "}
+                  {new Date(entry.createdAt).toLocaleDateString("en-GB", {
+                    day: "2-digit",
+                    month: "short",
+                  })}
+                </p>
+                <p className="mt-1 line-clamp-2 text-xs leading-5 text-silver/80 group-hover:text-white">
+                  {entry.title}
+                </p>
+              </Link>
+            ))}
+          </div>
+        )}
       </section>
 
       <section className="mt-14">

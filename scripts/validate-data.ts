@@ -164,6 +164,17 @@ for (const chapter of rexChapters) {
           errors.push(`Chapter ${chapter.slug} scene ${scene.id} requires more hotspots than exist`);
         }
       }
+      if (scene.puzzle.type === "excavation") {
+        for (const zone of scene.puzzle.zones) {
+          for (const sourceId of zone.sourceIds) {
+            if (!sourceIds.has(sourceId)) {
+              errors.push(
+                `Chapter ${chapter.slug} scene ${scene.id} excavation zone unknown source ${sourceId}`,
+              );
+            }
+          }
+        }
+      }
       if (scene.puzzle.type === "scan") {
         for (const target of scene.puzzle.targets) {
           for (const sourceId of target.sourceIds) {

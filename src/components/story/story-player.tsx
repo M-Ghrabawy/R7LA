@@ -18,6 +18,7 @@ import {
 import { sourceMap } from "@/data/sources";
 import { useRexAudio } from "@/lib/story/use-rex-audio";
 import { markComplete } from "@/lib/story/progress";
+import { addJournalEntry } from "@/lib/story/journal";
 import type { StoryScene } from "@/lib/story/schema";
 import { cn } from "@/lib/utils";
 import { RexCharacter, RexHead } from "@/components/rex/rex-character";
@@ -83,15 +84,38 @@ export function StoryPlayer({
     setHotspotDetail(null);
   }, []);
 
+  const recordDiscovery = useCallback(() => {
+    if (!scene.puzzle) return;
+    addJournalEntry({
+      id: `discovery:${progressKind}:${progressId}:${scene.id}`,
+      kind: "discovery",
+      title: scene.title,
+      body: `${scene.eyebrow}. Interaction verified. ${scene.dialogue[scene.dialogue.length - 1]}`,
+      relicId,
+      sourceIds: scene.sourceIds,
+      createdAt: new Date().toISOString(),
+    });
+  }, [progressId, progressKind, relicId, scene]);
+
   const solve = useCallback(() => {
     setPuzzleSolved(true);
-  }, []);
+    recordDiscovery();
+  }, [recordDiscovery]);
 
   const finish = useCallback(() => {
     markComplete(progressKind, progressId);
+    addJournalEntry({
+      id: `${progressKind}:${progressId}`,
+      kind: progressKind,
+      title,
+      body: `REX completed ${scenes.length} scenes. Objective: ${objective}`,
+      relicId,
+      sourceIds: [...new Set(scenes.flatMap((item) => item.sourceIds))],
+      createdAt: new Date().toISOString(),
+    });
     setFinished(true);
     audio.play("complete");
-  }, [audio, progressId, progressKind]);
+  }, [audio, objective, progressId, progressKind, relicId, scenes, title]);
 
   const next = useCallback(() => {
     if (!sceneDone) return;
@@ -131,6 +155,7 @@ export function StoryPlayer({
     setFoundHotspots(nextFound);
     if (nextFound.length >= scene.puzzle.required) {
       setPuzzleSolved(true);
+      recordDiscovery();
       audio.play("success");
     }
   };

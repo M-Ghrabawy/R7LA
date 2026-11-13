@@ -40,7 +40,7 @@ export const moonChapter: Chapter = {
         hint: "The strongest return is near 72 Hz. The optical array is a narrow-band echo near 44 Hz. Sweep slowly.",
         success:
           "Four signatures resolved. The site plan is now populated with descent hardware, an optical instrument, rover tracks, and a robotic lander.",
-        tolerance: 5,
+        tolerance: 10,
         targets: [
           {
             id: "eagle",
@@ -98,6 +98,73 @@ export const moonChapter: Chapter = {
       ],
       sourceIds: ["nasa-alsj", "nssdc-apollo-sites"],
       audioTheme: "lunar",
+    },
+    {
+      id: "dust-table",
+      kind: "puzzle",
+      eyebrow: "Site archaeology / Tranquility Base",
+      title: "Clear the dust, not the evidence.",
+      dialogue: [
+        "The surface layer is a record in itself. Footprints, cable routes, and ejected soil all carry information.",
+        "I am switching to a low-pressure brush. The objective is not to make the site look clean. It is to expose relationships without erasing them.",
+        "Move slowly around the descent stage. Let the regolith reveal what the crew left beneath it.",
+      ],
+      rexPose: "inspect",
+      rexExpression: "focused",
+      background: "moon",
+      props: ["descent-stage", "tracks", "retroreflector"],
+      artifactIds: ["apollo-11-lunar-module"],
+      sourceIds: ["nasa-alsj", "nssdc-apollo-sites"],
+      audioTheme: "lunar",
+      puzzle: {
+        type: "excavation",
+        prompt: "Clear the sediment / preserve the relationships",
+        hint: "Brush around the footpads, the experiment pallet, and the cable track. Do not clear the whole surface at once.",
+        success:
+          "Site plan recovered. Footpads, experiment hardware, and cable relationships are now documented in the archive.",
+        zones: [
+          {
+            id: "footpad",
+            label: "Footpad",
+            detail:
+              "The footpads record the landing load and the exact contact points with the surface.",
+            x: 31,
+            y: 66,
+            radius: 16,
+            sourceIds: ["nasa-alsj", "nssdc-apollo-sites"],
+          },
+          {
+            id: "pallet",
+            label: "Experiment pallet",
+            detail:
+              "The equipment pallet and cable runs show how the surface experiments were deployed.",
+            x: 51,
+            y: 76,
+            radius: 13,
+            sourceIds: ["nasa-alsj"],
+          },
+          {
+            id: "tracks",
+            label: "Cable route",
+            detail:
+              "Cables and footprints preserve the choreography of the EVA, not just the objects themselves.",
+            x: 71,
+            y: 71,
+            radius: 16,
+            sourceIds: ["nasa-alsj", "nasa-apollo-11"],
+          },
+          {
+            id: "plaque",
+            label: "Commemorative plaque",
+            detail:
+              "The plaque is a message fixed to the descent-stage ladder leg, addressed to future visitors.",
+            x: 18,
+            y: 57,
+            radius: 12,
+            sourceIds: ["nasa-alsj", "nssdc-apollo-11"],
+          },
+        ],
+      },
     },
     {
       id: "apollo-sequence",
@@ -225,6 +292,44 @@ export const moonChapter: Chapter = {
         ],
         answer: "lunokhod",
       },
+    },
+    {
+      id: "alsep-network",
+      kind: "archive",
+      eyebrow: "ALSEP / the Moon as a laboratory",
+      title: "A network left behind.",
+      dialogue: [
+        "The Apollo crews did not only leave footprints. They left a network of instruments designed to keep listening after the astronauts returned home.",
+        "Apollo 12 deployed the first full Apollo Lunar Surface Experiments Package. Seismometers, magnetometers, heat-flow probes, and other instruments formed a long-duration observatory.",
+        "The experiments eventually fell silent, but the stations remain on the surface. They are a different kind of relic: not a vehicle, but a distributed scientific instrument.",
+        "I am linking the Apollo 12 station to the wider ALSEP record. The archive must treat a network as an object too.",
+      ],
+      rexPose: "inspect",
+      rexExpression: "content",
+      background: "moon",
+      props: ["dish", "lander", "descent-stage"],
+      artifactIds: ["apollo-12-lunar-module", "apollo-11-laser-ranging-retroreflector"],
+      sourceIds: ["nasa-apollo-12", "nssdc-apollo-12", "nasa-alsj"],
+      audioTheme: "lunar",
+    },
+    {
+      id: "surveyor-return",
+      kind: "inspect",
+      eyebrow: "Surveyor 3 / second contact",
+      title: "The machine that waited.",
+      dialogue: [
+        "Surveyor 3 landed in 1967. Two and a half years later, Apollo 12 astronauts walked up to it and removed parts for return to Earth.",
+        "That visit made Surveyor 3 the first spacecraft on another world to be inspected by humans. The site became an archaeological encounter as well as an engineering one.",
+        "Its TV camera, samples, and surface interactions are now split between the Moon and Earth. The object is not in one place anymore.",
+        "I am recording what remained, what was removed, and what the difference means.",
+      ],
+      rexPose: "walk",
+      rexExpression: "curious",
+      background: "moon-crater",
+      props: ["lander", "descent-stage", "tracks"],
+      artifactIds: ["surveyor-3", "apollo-12-lunar-module"],
+      sourceIds: ["nasa-surveyor-3", "nssdc-surveyor-3", "nasa-apollo-12"],
+      audioTheme: "lunar",
     },
     {
       id: "lunar-legacy",
