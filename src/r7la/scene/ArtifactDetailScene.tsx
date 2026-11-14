@@ -359,7 +359,9 @@ function ArtifactSceneContent({ mission }: { mission: MissionArtifact }) {
     if (animRefs.current.wheels && animRefs.current.wheels.length > 0 && cue === 'roving') {
       for (const w of animRefs.current.wheels) {
         const axis = (w.userData as { spinAxis?: string } | undefined)?.spinAxis;
-        if (axis === 'z') {
+        if (axis === 'y') {
+          w.rotation.y -= dt * 2.8;
+        } else if (axis === 'z') {
           w.rotation.z -= dt * 2.8;
         } else {
           w.rotation.x += dt * 2.8;

@@ -891,73 +891,143 @@ export const ProceduralArtifactModel: React.FC<ProceduralArtifactProps> = ({
 
     /* 7. VIKING 1 & 2 LANDERS */
     case 'viking-1-2': {
-      const legAngles = [Math.PI / 6, (5 * Math.PI) / 6, (3 * Math.PI) / 2];
+      const legAngles = [
+        Math.PI / 2,
+        Math.PI / 2 + (2 * Math.PI) / 3,
+        Math.PI / 2 + (4 * Math.PI) / 3,
+      ];
       return (
         <group ref={(r) => { refsOut.current.root = r; }}>
-          {/* Hexagonal Thermal-Blanketed Body */}
-          <mesh position={[0, 0.76, 0]} material={m.whiteThermal} castShadow receiveShadow>
-            <cylinderGeometry args={[1.05, 1.05, 0.48, 6]} />
+          {/* Hexagonal thermal-blanketed lander body */}
+          <mesh position={[0, 0.88, 0]} material={m.whiteThermal} castShadow receiveShadow>
+            <cylinderGeometry args={[0.95, 1.0, 0.54, 6]} />
           </mesh>
-          <mesh position={[0, 0.54, 0]} material={m.goldFoil}>
-            <cylinderGeometry args={[1.0, 0.96, 0.1, 6]} />
+          <mesh position={[0, 0.58, 0]} material={m.goldFoil} castShadow>
+            <cylinderGeometry args={[1.0, 0.9, 0.16, 6]} />
           </mesh>
-          {/* 3 Landing Legs + Circular Footpads */}
-          {legAngles.map((ang, i) => (
-            <group key={i} rotation={[0, ang, 0]}>
-              <mesh position={[1.18, 0.42, 0]} rotation={[0, 0, -0.65]} material={m.titanium} castShadow>
-                <cylinderGeometry args={[0.045, 0.05, 0.96, 10]} />
-              </mesh>
-              <mesh position={[1.48, 0.05, 0]} material={m.whiteThermal} castShadow receiveShadow>
-                <cylinderGeometry args={[0.24, 0.28, 0.1, 18]} />
-              </mesh>
-            </group>
-          ))}
-          {/* Twin SNAP-19 RTG Wind Covers */}
-          {[-0.86, 0.86].map((x, i) => (
-            <group key={i} position={[x, 1.06, 0.35]}>
-              <mesh material={m.whiteThermal} castShadow>
-                <boxGeometry args={[0.42, 0.34, 0.58]} />
-              </mesh>
-              <mesh position={[0, 0, -0.32]} rotation={[Math.PI / 2, 0, 0]} material={m.darkCarbon}>
-                <cylinderGeometry args={[0.1, 0.1, 0.14, 12]} />
-              </mesh>
-            </group>
-          ))}
-          {/* S-Band Parabolic High-Gain Dish */}
-          <group
-            ref={(el) => { refsOut.current.dish = el; }}
-            position={[0, 1.48, -0.45]}
-          >
-            <mesh position={[0, -0.32, 0]} material={m.titanium}>
-              <cylinderGeometry args={[0.04, 0.04, 0.6, 10]} />
+          <mesh position={[0, 1.16, 0]} material={m.silverFoil}>
+            <cylinderGeometry args={[0.97, 0.97, 0.05, 6]} />
+          </mesh>
+          {[0, (2 * Math.PI) / 3, (4 * Math.PI) / 3].map((ang, i) => (
+            <mesh
+              key={i}
+              position={[Math.cos(ang) * 0.92, 0.92, Math.sin(ang) * 0.92]}
+              rotation={[0, -ang, 0]}
+              material={m.goldFoil}
+              castShadow
+            >
+              <boxGeometry args={[0.52, 0.28, 0.025]} />
             </mesh>
-            <mesh rotation={[0.75, 0, 0]} geometry={geos.vikingDish} material={m.whiteThermal} castShadow />
-          </group>
-          {/* Dual Cylindrical Facsimile Camera Turrets */}
-          {[-0.36, 0.36].map((x, i) => (
-            <group key={i} position={[x, 1.2, 0.38]}>
+          ))}
+
+          {/* Three landing legs: attached at body, knee joint, footpad */}
+          {legAngles.map((ang, i) => {
+            const attach: [number, number, number] = [
+              Math.cos(ang) * 0.84,
+              0.9,
+              Math.sin(ang) * 0.84,
+            ];
+            const knee: [number, number, number] = [
+              Math.cos(ang) * 1.2,
+              0.58,
+              Math.sin(ang) * 1.2,
+            ];
+            const foot: [number, number, number] = [
+              Math.cos(ang) * 1.58,
+              0.1,
+              Math.sin(ang) * 1.58,
+            ];
+            const brace: [number, number, number] = [
+              Math.cos(ang) * 1.02,
+              1.02,
+              Math.sin(ang) * 1.02,
+            ];
+            return (
+              <group key={i}>
+                <Strut from={attach} to={knee} radius={0.045} material={m.titanium} />
+                <Strut from={knee} to={foot} radius={0.035} material={m.titanium} />
+                <Strut from={brace} to={knee} radius={0.02} material={m.silverFoil} />
+                <mesh position={foot} material={m.whiteThermal} castShadow receiveShadow>
+                  <cylinderGeometry args={[0.23, 0.27, 0.1, 18]} />
+                </mesh>
+              </group>
+            );
+          })}
+
+          {/* Twin SNAP-19 RTGs with radial fins */}
+          {[-0.62, 0.62].map((x, i) => (
+            <group key={i} position={[x, 1.4, -0.08]}>
+              <Strut
+                from={[x, 1.17, -0.08]}
+                to={[x, 1.26, -0.08]}
+                radius={0.05}
+                material={m.titanium}
+              />
               <mesh material={m.goldFoil} castShadow>
-                <cylinderGeometry args={[0.09, 0.09, 0.44, 14]} />
+                <cylinderGeometry args={[0.13, 0.13, 0.42, 16]} />
               </mesh>
-              <mesh position={[0, 0.08, 0.08]} material={m.opticGlass}>
-                <boxGeometry args={[0.05, 0.18, 0.04]} />
+              {Array.from({ length: 6 }).map((_, fi) => (
+                <mesh key={fi} rotation={[0, (fi * Math.PI) / 3, 0]} material={m.titanium}>
+                  <boxGeometry args={[0.36, 0.38, 0.014]} />
+                </mesh>
+              ))}
+              <mesh position={[0, 0.23, 0]} material={m.darkCarbon}>
+                <cylinderGeometry args={[0.09, 0.09, 0.05, 12]} />
               </mesh>
             </group>
           ))}
-          {/* Meteorology Boom */}
-          <mesh position={[-0.75, 1.4, -0.25]} rotation={[0, 0, 0.35]} material={m.titanium}>
-            <cylinderGeometry args={[0.018, 0.022, 0.85, 8]} />
+
+          {/* High-gain parabolic dish on a mast */}
+          <mesh position={[0.05, 1.38, -0.6]} material={m.titanium}>
+            <cylinderGeometry args={[0.028, 0.034, 0.55, 8]} />
           </mesh>
-          {/* Remote Soil Collector Boom */}
-          <group
-            ref={(el) => { refsOut.current.arm = el; }}
-            position={[0, 0.86, 0.85]}
-          >
-            <mesh position={[0, 0, 0.65]} rotation={[Math.PI / 2, 0, 0]} material={m.titanium} castShadow>
-              <cylinderGeometry args={[0.032, 0.032, 1.28, 10]} />
+          <group position={[0.05, 1.72, -0.6]} rotation={[0.6, 0.2, 0]}>
+            <mesh geometry={geos.vikingDish} castShadow>
+              <meshStandardMaterial
+                color="#eef2f6"
+                metalness={0.25}
+                roughness={0.5}
+                side={THREE.DoubleSide}
+              />
             </mesh>
-            <mesh position={[0, -0.05, 1.3]} material={m.copper}>
-              <boxGeometry args={[0.13, 0.09, 0.18]} />
+            <mesh position={[0, 0.12, 0]} material={m.titanium}>
+              <cylinderGeometry args={[0.008, 0.008, 0.24, 6]} />
+            </mesh>
+            <mesh position={[0, 0.25, 0]} material={m.copper}>
+              <sphereGeometry args={[0.032, 8, 8]} />
+            </mesh>
+          </group>
+
+          {/* Facsimile cameras */}
+          {[-0.3, 0.3].map((x, i) => (
+            <group key={i} position={[x, 1.24, 0.7]}>
+              <mesh material={m.goldFoil} castShadow>
+                <cylinderGeometry args={[0.08, 0.08, 0.3, 12]} />
+              </mesh>
+              <mesh position={[0, 0.05, 0.1]} material={m.opticGlass}>
+                <boxGeometry args={[0.06, 0.14, 0.03]} />
+              </mesh>
+            </group>
+          ))}
+
+          {/* Meteorology boom */}
+          <Strut
+            from={[-0.82, 1.12, 0.18]}
+            to={[-1.26, 1.66, 0.34]}
+            radius={0.015}
+            material={m.titanium}
+          />
+          <mesh position={[-1.26, 1.66, 0.34]} material={m.silverFoil}>
+            <boxGeometry args={[0.08, 0.08, 0.08]} />
+          </mesh>
+
+          {/* Remote sampler arm */}
+          <group ref={(el) => { refsOut.current.arm = el; }} position={[0, 0.94, 0.86]}>
+            <mesh position={[0, 0, 0.56]} rotation={[Math.PI / 2, 0, 0]} material={m.titanium} castShadow>
+              <cylinderGeometry args={[0.03, 0.03, 1.12, 10]} />
+            </mesh>
+            <mesh position={[0, -0.04, 1.14]} material={m.copper}>
+              <boxGeometry args={[0.12, 0.08, 0.16]} />
             </mesh>
           </group>
         </group>
@@ -1128,66 +1198,87 @@ export const ProceduralArtifactModel: React.FC<ProceduralArtifactProps> = ({
     /* 11. PIONEER 10 & 11 */
     case 'pioneer-10-11': {
       return (
-        <group ref={(r) => { refsOut.current.root = r; }} position={[0, 0.88, 0]}>
-          {/* Iconic 2.74-m Parabolic High-Gain Dish */}
+        <group ref={(r) => { refsOut.current.root = r; }}>
+          {/* Iconic 2.74 m parabolic high-gain dish, facing the camera */}
           <mesh
             ref={(el) => { refsOut.current.dish = el; }}
+            position={[0, 0, 0]}
             rotation={[Math.PI / 2, 0, 0]}
             geometry={geos.pioneerDish}
-            material={m.whiteThermal}
             castShadow
             receiveShadow
-          />
-          {/* Feed Horn Tripod Struts */}
+          >
+            <meshStandardMaterial
+              color="#eef2f6"
+              metalness={0.25}
+              roughness={0.5}
+              side={THREE.DoubleSide}
+            />
+          </mesh>
+          {/* Feed horn tripod */}
           {[0, (2 * Math.PI) / 3, (4 * Math.PI) / 3].map((ang, i) => (
-            <mesh
+            <Strut
               key={i}
-              position={[Math.cos(ang) * 0.44, Math.sin(ang) * 0.44, 0.44]}
-              rotation={[Math.sin(ang) * 0.6, -Math.cos(ang) * 0.6, 0]}
+              from={[Math.cos(ang) * 1.3, Math.sin(ang) * 1.3, 0]}
+              to={[0, 0, 0.95]}
+              radius={0.02}
               material={m.titanium}
-            >
-              <cylinderGeometry args={[0.022, 0.022, 0.98, 8]} />
-            </mesh>
+            />
           ))}
-          <mesh position={[0, 0, 0.82]} rotation={[Math.PI / 2, 0, 0]} material={m.goldFoil}>
-            <cylinderGeometry args={[0.08, 0.1, 0.16, 12]} />
+          <mesh position={[0, 0, 1.0]} rotation={[Math.PI / 2, 0, 0]} material={m.goldFoil}>
+            <cylinderGeometry args={[0.09, 0.05, 0.18, 10]} />
           </mesh>
-          {/* Hexagonal Gold-Foil Equipment Compartment */}
-          <mesh position={[0, 0, -0.36]} rotation={[Math.PI / 2, 0, 0]} material={m.goldFoil} castShadow>
-            <cylinderGeometry args={[0.52, 0.52, 0.38, 6]} />
+          <mesh position={[0, 0, 1.12]} material={m.copper}>
+            <sphereGeometry args={[0.04, 10, 8]} />
           </mesh>
-          {/* Twin Extended SNAP-19 RTG Truss Booms */}
-          {[-1, 1].map((dir, i) => (
-            <group key={i} rotation={[0, 0, dir * 0.38]}>
-              <mesh position={[dir * 1.48, 0, -0.34]} rotation={[0, 0, Math.PI / 2]} material={m.titanium}>
-                <cylinderGeometry args={[0.025, 0.025, 2.0, 8]} />
-              </mesh>
-              <mesh position={[dir * 2.42, 0, -0.34]} material={m.darkCarbon} castShadow>
-                <cylinderGeometry args={[0.14, 0.14, 0.44, 14]} />
-              </mesh>
-              {/* RTG Radial Fins */}
-              {[0, Math.PI / 3, (2 * Math.PI) / 3].map((fa, fi) => (
-                <mesh
-                  key={fi}
-                  position={[dir * 2.42, 0, -0.34]}
-                  rotation={[0, fa, 0]}
-                  material={m.titanium}
-                >
-                  <boxGeometry args={[0.36, 0.42, 0.018]} />
-                </mesh>
-              ))}
-            </group>
-          ))}
-          {/* Long Magnetometer Boom */}
-          <mesh position={[0, -1.7, -0.34]} material={m.titanium}>
-            <cylinderGeometry args={[0.02, 0.02, 2.4, 8]} />
+
+          {/* Hexagonal gold-foil equipment bus behind the dish */}
+          <mesh position={[0, 0, -0.55]} rotation={[Math.PI / 2, 0, 0]} material={m.goldFoil} castShadow>
+            <cylinderGeometry args={[0.46, 0.46, 0.42, 6]} />
           </mesh>
-          <mesh position={[0, -2.9, -0.34]} material={m.copper}>
-            <cylinderGeometry args={[0.06, 0.06, 0.18, 10]} />
+          <mesh position={[0, 0, -0.78]} rotation={[Math.PI / 2, 0, 0]} material={m.silverFoil}>
+            <cylinderGeometry args={[0.3, 0.3, 0.06, 6]} />
           </mesh>
-          {/* Gold-Anodized Aluminum Plaque */}
-          <mesh position={[0.42, 0.16, -0.18]} rotation={[0, 0.4, 0]} material={m.goldFoil}>
-            <boxGeometry args={[0.2, 0.13, 0.02]} />
+
+          {/* Three RTG booms with finned generators */}
+          {[
+            Math.PI / 2,
+            Math.PI / 2 + (2 * Math.PI) / 3,
+            Math.PI / 2 + (4 * Math.PI) / 3,
+          ].map((ang, i) => {
+            const dx = Math.cos(ang);
+            const dy = Math.sin(ang);
+            const from: [number, number, number] = [dx * 0.46, dy * 0.46, -0.55];
+            const end: [number, number, number] = [dx * 2.35, dy * 2.35, -0.55];
+            return (
+              <group key={i}>
+                <Strut from={from} to={end} radius={0.025} material={m.titanium} />
+                <group position={end} rotation={[0, 0, ang - Math.PI / 2]}>
+                  <mesh material={m.darkCarbon} castShadow>
+                    <cylinderGeometry args={[0.15, 0.15, 0.46, 14]} />
+                  </mesh>
+                  {[0, Math.PI / 3, (2 * Math.PI) / 3].map((fa, fi) => (
+                    <mesh key={fi} rotation={[0, fa, 0]} material={m.titanium}>
+                      <boxGeometry args={[0.38, 0.44, 0.016]} />
+                    </mesh>
+                  ))}
+                  <mesh position={[0, 0.26, 0]} material={m.goldFoil}>
+                    <cylinderGeometry args={[0.1, 0.1, 0.06, 12]} />
+                  </mesh>
+                </group>
+              </group>
+            );
+          })}
+
+          {/* Magnetometer boom */}
+          <Strut from={[0, -0.3, -0.6]} to={[0, -2.15, -0.6]} radius={0.02} material={m.titanium} />
+          <mesh position={[0, -2.28, -0.6]} material={m.copper}>
+            <cylinderGeometry args={[0.07, 0.07, 0.22, 10]} />
+          </mesh>
+
+          {/* Pioneer plaque */}
+          <mesh position={[0.34, 0.18, -0.72]} rotation={[0, 0.35, 0]} material={m.goldFoil}>
+            <boxGeometry args={[0.22, 0.15, 0.02]} />
           </mesh>
         </group>
       );
@@ -1195,67 +1286,83 @@ export const ProceduralArtifactModel: React.FC<ProceduralArtifactProps> = ({
 
     /* 12. INGENUITY HELICOPTER */
     case 'ingenuity-helicopter': {
-      const legAngles = [Math.PI / 4, (3 * Math.PI) / 4, (5 * Math.PI) / 4, (7 * Math.PI) / 4];
+      const legAngles = [
+        Math.PI / 4,
+        (3 * Math.PI) / 4,
+        (5 * Math.PI) / 4,
+        (7 * Math.PI) / 4,
+      ];
       return (
         <group ref={(r) => { refsOut.current.root = r; }}>
-          {/* Gold-Foil Insulated Avionics Cube */}
-          <mesh position={[0, 0.55, 0]} material={m.goldFoil} castShadow receiveShadow>
-            <boxGeometry args={[0.38, 0.34, 0.38]} />
+          {/* Gold-foil avionics body with solar deck */}
+          <mesh position={[0, 0.62, 0]} material={m.goldFoil} castShadow receiveShadow>
+            <boxGeometry args={[0.42, 0.28, 0.42]} />
           </mesh>
-          {/* Downward Navigation Camera Lens */}
-          <mesh position={[0.1, 0.37, 0.1]} material={m.opticGlass}>
+          <mesh position={[0, 0.77, 0]} material={m.whiteThermal}>
+            <boxGeometry args={[0.46, 0.03, 0.46]} />
+          </mesh>
+          <mesh position={[0, 0.79, 0]} material={m.solar} castShadow>
+            <boxGeometry args={[0.56, 0.02, 0.5]} />
+          </mesh>
+          <mesh position={[0.1, 0.47, 0.1]} material={m.opticGlass}>
             <cylinderGeometry args={[0.035, 0.035, 0.03, 12]} />
           </mesh>
-          {/* 4 Splayed Carbon-Fiber Landing Legs */}
-          {legAngles.map((ang, i) => (
-            <group key={i}>
-              <mesh
-                position={[Math.cos(ang) * 0.32, 0.28, Math.sin(ang) * 0.32]}
-                rotation={[Math.sin(ang) * 0.56, 0, -Math.cos(ang) * 0.56]}
-                material={m.darkCarbon}
-                castShadow
-              >
-                <cylinderGeometry args={[0.018, 0.014, 0.74, 8]} />
-              </mesh>
-              <mesh position={[Math.cos(ang) * 0.52, 0.02, Math.sin(ang) * 0.52]} material={m.titanium}>
-                <sphereGeometry args={[0.026, 8, 8]} />
-              </mesh>
-            </group>
-          ))}
-          {/* Vertical Drive Mast & Swashplate Collars */}
-          <mesh position={[0, 0.98, 0]} material={m.titanium} castShadow>
-            <cylinderGeometry args={[0.032, 0.038, 0.64, 12]} />
+
+          {/* Four landing legs with skids, attached to the body */}
+          {legAngles.map((ang, i) => {
+            const top: [number, number, number] = [
+              Math.cos(ang) * 0.17,
+              0.55,
+              Math.sin(ang) * 0.17,
+            ];
+            const foot: [number, number, number] = [
+              Math.cos(ang) * 0.52,
+              0.04,
+              Math.sin(ang) * 0.52,
+            ];
+            return (
+              <group key={i}>
+                <Strut from={top} to={foot} radius={0.016} material={m.darkCarbon} />
+                <mesh position={foot} rotation={[0, -ang, Math.PI / 2]} material={m.titanium}>
+                  <cylinderGeometry args={[0.022, 0.022, 0.2, 8]} />
+                </mesh>
+              </group>
+            );
+          })}
+
+          {/* Rotor mast and swashplate */}
+          <mesh position={[0, 0.99, 0]} material={m.titanium} castShadow>
+            <cylinderGeometry args={[0.03, 0.038, 0.4, 12]} />
           </mesh>
-          <mesh position={[0, 0.88, 0]} material={m.silverFoil}>
-            <cylinderGeometry args={[0.075, 0.075, 0.05, 14]} />
+          <mesh position={[0, 0.87, 0]} material={m.silverFoil}>
+            <cylinderGeometry args={[0.07, 0.07, 0.05, 14]} />
           </mesh>
-          {/* Coaxial Counter-Rotating Carbon-Fiber Blades (~1.2m span) */}
-          <group ref={(el) => { refsOut.current.rotorBottom = el; }} position={[0, 1.02, 0]}>
+
+          {/* Two counter-rotating rotors */}
+          <group ref={(el) => { refsOut.current.rotorBottom = el; }} position={[0, 1.12, 0]}>
             <mesh material={m.darkCarbon} castShadow>
-              <boxGeometry args={[2.3, 0.018, 0.14]} />
+              <boxGeometry args={[1.2, 0.012, 0.065]} />
             </mesh>
             <mesh material={m.titanium}>
-              <cylinderGeometry args={[0.06, 0.06, 0.04, 12]} />
+              <cylinderGeometry args={[0.05, 0.05, 0.03, 12]} />
             </mesh>
           </group>
           <group
             ref={(el) => { refsOut.current.rotorTop = el; }}
-            position={[0, 1.18, 0]}
+            position={[0, 1.26, 0]}
             rotation={[0, Math.PI / 2, 0]}
           >
             <mesh material={m.darkCarbon} castShadow>
-              <boxGeometry args={[2.3, 0.018, 0.14]} />
+              <boxGeometry args={[1.2, 0.012, 0.065]} />
             </mesh>
             <mesh material={m.titanium}>
-              <cylinderGeometry args={[0.06, 0.06, 0.04, 12]} />
+              <cylinderGeometry args={[0.05, 0.05, 0.03, 12]} />
             </mesh>
           </group>
-          {/* Top Solar Array & S-Band Antenna */}
-          <mesh position={[0, 1.33, 0]} material={m.solar} castShadow>
-            <boxGeometry args={[0.72, 0.03, 0.34]} />
-          </mesh>
-          <mesh position={[0, 1.46, 0]} material={m.titanium}>
-            <cylinderGeometry args={[0.012, 0.012, 0.24, 8]} />
+
+          {/* Antenna */}
+          <mesh position={[0.17, 0.94, -0.12]} material={m.titanium}>
+            <cylinderGeometry args={[0.008, 0.008, 0.36, 6]} />
           </mesh>
         </group>
       );
@@ -1311,12 +1418,25 @@ export const ProceduralArtifactModel: React.FC<ProceduralArtifactProps> = ({
           {wheelX.map((x) =>
             wheelZ.map((z) => (
               <group key={`${x}-${z}`} position={[x, 0.22, z]}>
-                <group ref={registerWheel} userData={{ spinAxis: 'z' }}>
-                  <mesh rotation={[Math.PI / 2, 0, 0]} material={m.darkCarbon} castShadow>
-                    <cylinderGeometry args={[0.2, 0.2, 0.13, 18]} />
+                <group
+                  ref={registerWheel}
+                  userData={{ spinAxis: 'y' }}
+                  rotation={[Math.PI / 2, 0, 0]}
+                >
+                  <mesh material={m.darkCarbon} castShadow>
+                    <cylinderGeometry args={[0.2, 0.2, 0.13, 24]} />
                   </mesh>
-                  <mesh rotation={[Math.PI / 2, 0, 0]} material={m.titanium}>
-                    <cylinderGeometry args={[0.075, 0.075, 0.135, 10]} />
+                  <mesh material={m.titanium}>
+                    <cylinderGeometry args={[0.08, 0.08, 0.14, 14]} />
+                  </mesh>
+                  <mesh position={[0, 0.072, 0]} material={m.silverFoil}>
+                    <boxGeometry args={[0.34, 0.012, 0.035]} />
+                  </mesh>
+                  <mesh position={[0, -0.072, 0]} material={m.silverFoil}>
+                    <boxGeometry args={[0.34, 0.012, 0.035]} />
+                  </mesh>
+                  <mesh position={[0, 0.072, 0]} rotation={[0, Math.PI / 2, 0]} material={m.silverFoil}>
+                    <boxGeometry args={[0.34, 0.012, 0.035]} />
                   </mesh>
                 </group>
                 <Strut from={[0, 0.3, 0]} to={[0, 0.04, 0]} radius={0.022} material={m.titanium} />
@@ -1384,35 +1504,93 @@ export const ProceduralArtifactModel: React.FC<ProceduralArtifactProps> = ({
     /* 15. MARS PATHFINDER LANDER */
     case 'mars-pathfinder': {
       return (
-        <group ref={(r) => { refsOut.current.root = r; }} position={[0, 0.1, 0]}>
-          {/* Central Lander Body */}
-          <mesh position={[0, 0.42, 0]} material={m.whiteThermal} castShadow receiveShadow>
-            <boxGeometry args={[0.82, 0.5, 0.82]} />
+        <group ref={(r) => { refsOut.current.root = r; }}>
+          {/* Central lander body */}
+          <mesh position={[0, 0.5, 0]} material={m.whiteThermal} castShadow receiveShadow>
+            <boxGeometry args={[0.72, 0.52, 0.72]} />
           </mesh>
-          {/* Four Opened Petals With Solar Panels */}
-          {[0, Math.PI / 2, Math.PI, (3 * Math.PI) / 2].map((ang, i) => (
-            <group key={i} rotation={[0, ang, 0]}>
-              <mesh position={[0, 0.2, 1.02]} rotation={[0.08, 0, 0]} material={m.solar} castShadow>
-                <boxGeometry args={[1.34, 0.05, 1.16]} />
-              </mesh>
-              <mesh position={[0, 0.16, 0.45]} rotation={[0.08, 0, 0]} material={m.darkCarbon}>
-                <boxGeometry args={[1.1, 0.03, 0.3]} />
-              </mesh>
-            </group>
-          ))}
-          {/* Camera Mast and High-Gain Antenna */}
-          <mesh position={[0, 0.98, 0.1]} material={m.titanium}>
-            <cylinderGeometry args={[0.025, 0.025, 0.62, 8]} />
+          <mesh position={[0, 0.24, 0]} material={m.goldFoil} castShadow>
+            <boxGeometry args={[0.76, 0.18, 0.76]} />
           </mesh>
-          <mesh position={[0, 1.3, 0.1]} material={m.whiteThermal}>
-            <boxGeometry args={[0.16, 0.1, 0.12]} />
+          <mesh position={[0, 0.78, 0]} material={m.silverFoil}>
+            <boxGeometry args={[0.76, 0.04, 0.76]} />
           </mesh>
-          <mesh position={[0.34, 0.55, 0.34]} rotation={[0.4, 0.5, 0]} material={m.silverFoil}>
-            <cylinderGeometry args={[0.14, 0.14, 0.03, 16]} />
+
+          {/* Four triangular petals opened like a flower */}
+          {[0, 1, 2, 3].map((i) => {
+            const ang = (i * Math.PI) / 2;
+            return (
+              <group key={i} rotation={[0, ang, 0]}>
+                <mesh position={[0, 0.2, 0.38]} rotation={[0, 0, Math.PI / 2]} material={m.darkCarbon}>
+                  <cylinderGeometry args={[0.035, 0.035, 0.68, 8]} />
+                </mesh>
+                <mesh
+                  position={[0, 0.1, 0.98]}
+                  rotation={[-Math.PI / 2 + 0.12, 0, Math.PI / 2]}
+                  material={m.solar}
+                  castShadow
+                >
+                  <circleGeometry args={[1.0, 3]} />
+                </mesh>
+                <mesh
+                  position={[0, 0.07, 0.98]}
+                  rotation={[-Math.PI / 2 + 0.12, 0, Math.PI / 2]}
+                  material={m.darkCarbon}
+                >
+                  <circleGeometry args={[1.04, 3]} />
+                </mesh>
+              </group>
+            );
+          })}
+
+          {/* Rover ramp on the front petal */}
+          <mesh position={[0, 0.11, 0.95]} rotation={[0.12, 0, 0]} material={m.titanium}>
+            <boxGeometry args={[0.3, 0.02, 0.92]} />
           </mesh>
-          {/* Rover Ramp */}
-          <mesh position={[0, 0.12, 1.45]} rotation={[-0.16, 0, 0]} material={m.titanium}>
-            <boxGeometry args={[0.42, 0.03, 0.9]} />
+
+          {/* Sojourner rover deployed on the front petal */}
+          <group position={[0, 0.16, 1.02]}>
+            <mesh position={[0, 0.12, 0]} material={m.goldFoil} castShadow>
+              <boxGeometry args={[0.24, 0.12, 0.3]} />
+            </mesh>
+            <mesh position={[0, 0.2, 0]} material={m.solar}>
+              <boxGeometry args={[0.28, 0.02, 0.34]} />
+            </mesh>
+            {[-0.16, 0, 0.16].map((z, i) => (
+              <group key={i}>
+                <mesh position={[0.14, 0.045, z]} rotation={[0, 0, Math.PI / 2]} material={m.darkCarbon}>
+                  <cylinderGeometry args={[0.045, 0.045, 0.03, 10]} />
+                </mesh>
+                <mesh position={[-0.14, 0.045, z]} rotation={[0, 0, Math.PI / 2]} material={m.darkCarbon}>
+                  <cylinderGeometry args={[0.045, 0.045, 0.03, 10]} />
+                </mesh>
+              </group>
+            ))}
+          </group>
+
+          {/* Camera mast */}
+          <mesh position={[0.28, 1.0, 0.2]} material={m.titanium}>
+            <cylinderGeometry args={[0.02, 0.025, 0.55, 8]} />
+          </mesh>
+          <mesh position={[0.28, 1.3, 0.2]} material={m.whiteThermal} castShadow>
+            <boxGeometry args={[0.14, 0.1, 0.12]} />
+          </mesh>
+          <mesh position={[0.28, 1.28, 0.27]} material={m.opticGlass}>
+            <boxGeometry args={[0.06, 0.06, 0.02]} />
+          </mesh>
+
+          {/* Low-gain antenna and wind sensor boom */}
+          <mesh position={[-0.3, 0.9, -0.22]} rotation={[0.3, 0.4, 0]} material={m.silverFoil}>
+            <cylinderGeometry args={[0.12, 0.06, 0.08, 12]} />
+          </mesh>
+          <Strut
+            from={[-0.4, 0.8, 0.1]}
+            to={[-0.9, 1.15, 0.22]}
+            radius={0.012}
+            material={m.titanium}
+          />
+          <mesh position={[-0.9, 1.15, 0.22]} material={m.copper}>
+            <sphereGeometry args={[0.04, 8, 8]} />
           </mesh>
         </group>
       );
