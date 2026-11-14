@@ -164,6 +164,38 @@ for (const chapter of rexChapters) {
           errors.push(`Chapter ${chapter.slug} scene ${scene.id} requires more hotspots than exist`);
         }
       }
+      if (scene.puzzle.type === "path") {
+        if (
+          scene.puzzle.start.x < 0 ||
+          scene.puzzle.start.y < 0 ||
+          scene.puzzle.start.x >= scene.puzzle.cols ||
+          scene.puzzle.start.y >= scene.puzzle.rows
+        ) {
+          errors.push(`Chapter ${chapter.slug} scene ${scene.id} path start out of bounds`);
+        }
+        for (const target of scene.puzzle.targets) {
+          if (
+            target.x < 0 || target.y < 0 ||
+            target.x >= scene.puzzle.cols || target.y >= scene.puzzle.rows
+          ) {
+            errors.push(`Chapter ${chapter.slug} scene ${scene.id} path target out of bounds`);
+          }
+          for (const sourceId of target.sourceIds) {
+            if (!sourceIds.has(sourceId)) {
+              errors.push(`Chapter ${chapter.slug} scene ${scene.id} path target unknown source ${sourceId}`);
+            }
+          }
+        }
+      }
+      if (scene.puzzle.type === "allocate") {
+        for (const item of scene.puzzle.items) {
+          for (const sourceId of item.sourceIds) {
+            if (!sourceIds.has(sourceId)) {
+              errors.push(`Chapter ${chapter.slug} scene ${scene.id} allocation unknown source ${sourceId}`);
+            }
+          }
+        }
+      }
       if (scene.puzzle.type === "excavation") {
         for (const zone of scene.puzzle.zones) {
           for (const sourceId of zone.sourceIds) {

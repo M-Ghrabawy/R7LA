@@ -8,7 +8,6 @@ import {
   relics,
 } from "@/lib/data";
 import { toSceneRelic } from "@/lib/scene-types";
-import type { Destination } from "@/lib/schema";
 
 export const metadata: Metadata = {
   title: "Planet Explorer",
@@ -16,14 +15,7 @@ export const metadata: Metadata = {
     "Explore human artifacts on the Moon and Mars by location, mission, category, and operational status.",
 };
 
-export default async function ExplorePage({
-  searchParams,
-}: {
-  searchParams: Promise<{ world?: string; relic?: string }>;
-}) {
-  const params = await searchParams;
-  const world: Destination =
-    params.world?.toLowerCase() === "mars" ? "Mars" : "Moon";
+export default function ExplorePage() {
   const sceneRelics = relics.map((relic) =>
     toSceneRelic(relic, computeLegacyTotal(relic.legacy)),
   );
@@ -32,8 +24,8 @@ export default async function ExplorePage({
     <Suspense fallback={<SceneLoading className="min-h-[70svh]" />}>
       <ExplorerExperience
         relics={sceneRelics}
-        initialWorld={world}
-        initialRelicId={params.relic ?? null}
+        initialWorld="Moon"
+        initialRelicId={null}
         stats={{
           relics: archiveStats.relics,
           sources: archiveStats.identifiedSources,

@@ -1,0 +1,4 @@
+{
+  "description": "Register supplied female voiceover MP3 files here as [mission-id]: '/audio/echo/[mission-id].mp3'. Leave empty to use built-in Web Audio vocal cadence synthesis.",
+  "tracks": {}
+}

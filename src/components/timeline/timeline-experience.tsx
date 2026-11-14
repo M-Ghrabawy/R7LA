@@ -1,28 +1,26 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Archive,
+  ArrowDownUp,
   ArrowRight,
   ArrowUpRight,
   CalendarRange,
-  ChevronLeft,
-  ChevronRight,
+  ChevronDown,
   CircleStop,
   Crosshair,
-  Orbit,
-  Radio,
   RadioOff,
   Rocket,
-  Search,
   RotateCcw,
   Satellite,
+  Search,
   Telescope,
   Trophy,
   Wrench,
+  X,
 } from "lucide-react";
-import { motion } from "framer-motion";
 import type { Destination, TimelineEvent } from "@/lib/schema";
 import { cn } from "@/lib/utils";
 
@@ -40,13 +38,16 @@ type TimelineEventWithSources = TimelineEvent & {
 };
 
 const eventTypes: Array<{ value: "all" | TimelineEvent["type"]; label: string }> = [
-  { value: "all", label: "All events" },
+  { value: "all", label: "All" },
   { value: "launch", label: "Launch" },
+  { value: "arrival", label: "Arrival" },
   { value: "landing", label: "Landing" },
+  { value: "deployment", label: "Deployment" },
   { value: "discovery", label: "Discovery" },
+  { value: "record", label: "Record" },
   { value: "loss", label: "Loss" },
-  { value: "end", label: "Mission end" },
-  { value: "legacy", label: "Legacy" },
+  { value: "end", label: "End" },
+  { value: "legacy", label: "Aftermath" },
 ];
 
 const typeLabel: Record<TimelineEvent["type"], string> = {
@@ -58,7 +59,7 @@ const typeLabel: Record<TimelineEvent["type"], string> = {
   record: "Record",
   loss: "Loss",
   end: "End",
-  legacy: "Legacy",
+  legacy: "Aftermath",
 };
 
 const typeIcon: Record<TimelineEvent["type"], typeof Rocket> = {
@@ -74,15 +75,15 @@ const typeIcon: Record<TimelineEvent["type"], typeof Rocket> = {
 };
 
 const typeTone: Record<TimelineEvent["type"], string> = {
-  launch: "text-teal-bright border-teal/30",
-  arrival: "text-teal-bright border-teal/30",
-  landing: "text-gold border-gold/30",
-  deployment: "text-gold border-gold/30",
-  discovery: "text-teal-bright border-teal/30",
-  record: "text-gold border-gold/30",
-  loss: "text-[#c9867c] border-[#c9867c]/30",
-  end: "text-muted border-line-bright",
-  legacy: "text-silver border-line-bright",
+  launch: "text-teal-bright border-teal/40 bg-teal/5",
+  arrival: "text-teal-bright border-teal/40 bg-teal/5",
+  landing: "text-gold border-gold/40 bg-gold/5",
+  deployment: "text-gold border-gold/40 bg-gold/5",
+  discovery: "text-teal-bright border-teal/40 bg-teal/5",
+  record: "text-gold border-gold/40 bg-gold/5",
+  loss: "text-[#d19489] border-[#d19489]/40 bg-[#d19489]/5",
+  end: "text-muted border-line-bright bg-panel/30",
+  legacy: "text-silver border-line-bright bg-panel/30",
 };
 
 export function TimelineExperience({
@@ -94,534 +95,475 @@ export function TimelineExperience({
   startYear: number;
   endYear: number;
 }) {
-  const [year, setYear] = useState(endYear);
+  const [query, setQuery] = useState("");
   const [destination, setDestination] = useState<"all" | Destination>("all");
   const [type, setType] = useState<"all" | TimelineEvent["type"]>("all");
-  const [mission, setMission] = useState("all");
-  const [query, setQuery] = useState("");
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-
-  const missions = useMemo(
-    () => [...new Set(events.map((event) => event.mission))].sort(),
-    [events],
-  );
+  const [sort, setSort] = useState<"asc" | "desc">("asc");
+  const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const filtered = useMemo(() => {
-    const normalizedQuery = query.trim().toLowerCase();
-    return events
-      .filter((event) => Number(event.date.slice(0, 4)) <= year)
-      .filter(
-        (event) =>
-          destination === "all" || event.destination === destination,
-      )
-      .filter((event) => type === "all" || event.type === type)
-      .filter((event) => mission === "all" || event.mission === mission)
-      .filter(
-        (event) =>
-          !normalizedQuery ||
-          [event.title, event.summary, event.mission, event.relicName]
-            .join(" ")
-            .toLowerCase()
-            .includes(normalizedQuery),
-      )
-      .slice()
-      .reverse();
-  }, [destination, events, mission, query, type, year]);
+    const q = query.trim().toLowerCase();
+    const list = events.filter((event) => {
+      if (destination !== "all" && event.destination !== destination) return false;
+      if (type !== "all" && event.type !== type) return false;
+      if (!q) return true;
+      return [event.title, event.summary, event.mission, event.relicName, event.dateLabel]
+        .join(" ")
+        .toLowerCase()
+        .includes(q);
+    });
+    return list.sort((a, b) =>
+      sort === "asc" ? a.date.localeCompare(b.date) : b.date.localeCompare(a.date),
+    );
+  }, [events, destination, type, query, sort]);
 
   const decades = useMemo(() => {
-    const groups = new Map<string, TimelineEventWithSources[]>();
+    const map = new Map<number, number>();
     for (const event of filtered) {
-      const decade = `${event.date.slice(0, 3)}0s`;
-      groups.set(decade, [...(groups.get(decade) ?? []), event]);
+      const decade = Math.floor(Number(event.date.slice(0, 4)) / 10) * 10;
+      map.set(decade, (map.get(decade) ?? 0) + 1);
     }
-    return [...groups.entries()];
-  }, [filtered]);
-
-  const selected =
-    filtered.find((event) => event.id === selectedId) ?? filtered[0] ?? null;
-
-  const density = useMemo(() => {
-    const counts = new Map<number, number>();
-    for (const event of events) {
-      const eventYear = Number(event.date.slice(0, 4));
-      counts.set(eventYear, (counts.get(eventYear) ?? 0) + 1);
-    }
-    const max = Math.max(...counts.values(), 1);
-    return Array.from(
-      { length: endYear - startYear + 1 },
-      (_, index) => {
-        const eventYear = startYear + index;
-        return {
-          year: eventYear,
-          count: counts.get(eventYear) ?? 0,
-          height: Math.max(2, ((counts.get(eventYear) ?? 0) / max) * 42),
-          active: eventYear <= year,
-        };
-      },
+    return [...map.entries()].sort((a, b) =>
+      sort === "asc" ? a[0] - b[0] : b[0] - a[0],
     );
-  }, [endYear, events, startYear, year]);
+  }, [filtered, sort]);
 
-  const reset = () => {
-    setYear(endYear);
+  const grouped = useMemo(() => {
+    const map = new Map<number, TimelineEventWithSources[]>();
+    for (const event of filtered) {
+      const decade = Math.floor(Number(event.date.slice(0, 4)) / 10) * 10;
+      const list = map.get(decade) ?? [];
+      list.push(event);
+      map.set(decade, list);
+    }
+    return [...map.entries()].sort((a, b) =>
+      sort === "asc" ? a[0] - b[0] : b[0] - a[0],
+    );
+  }, [filtered, sort]);
+
+  const yearCounts = useMemo(() => {
+    const years = new Map<number, { moon: number; mars: number }>();
+    for (let year = startYear; year <= endYear; year += 1) {
+      years.set(year, { moon: 0, mars: 0 });
+    }
+    for (const event of filtered) {
+      const year = Number(event.date.slice(0, 4));
+      const entry = years.get(year);
+      if (!entry) continue;
+      if (event.destination === "Moon") entry.moon += 1;
+      else entry.mars += 1;
+    }
+    return years;
+  }, [filtered, startYear, endYear]);
+
+  const maxYear = Math.max(
+    1,
+    ...[...yearCounts.values()].map((entry) => entry.moon + entry.mars),
+  );
+
+  const objectCount = new Set(filtered.map((event) => event.relicId)).size;
+  const missionCount = new Set(filtered.map((event) => event.mission)).size;
+
+  const moonCount = events.filter((event) => event.destination === "Moon").length;
+  const marsCount = events.length - moonCount;
+
+  const scrollToId = (id: string) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  // Deep links from the home page and elsewhere.
+  useEffect(() => {
+    const hash = window.location.hash.replace(/^#/, "");
+    if (!hash.startsWith("event-")) return;
+    const event = events.find((item) => `event-${item.id}` === hash);
+    if (!event) return;
     setDestination("all");
     setType("all");
-    setMission("all");
     setQuery("");
-    setSelectedId(null);
+    setExpandedId(event.id);
+    const timer = window.setTimeout(() => {
+      document.getElementById(hash)?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 80);
+    return () => window.clearTimeout(timer);
+  }, [events]);
+
+  const reset = () => {
+    setQuery("");
+    setDestination("all");
+    setType("all");
+    setSort("asc");
+    setExpandedId(null);
   };
 
   return (
     <div className="mt-8">
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_330px]">
-        <div>
-          <section className="relative overflow-hidden border border-line/70 bg-[linear-gradient(120deg,rgba(9,28,40,.92),rgba(5,16,25,.92))]">
-            <div className="absolute inset-0 bg-[linear-gradient(rgba(43,82,98,.1)_1px,transparent_1px),linear-gradient(90deg,rgba(43,82,98,.1)_1px,transparent_1px)] bg-[size:36px_36px] opacity-30" />
-            <div className="relative p-5 md:p-7">
-              <div className="flex flex-wrap items-start justify-between gap-5">
-                <div>
-                  <div className="flex items-center gap-2.5">
-                    <CalendarRange className="size-4 text-gold" />
-                    <p className="font-mono text-[9px] uppercase tracking-[0.18em] text-gold">
-                      Temporal instrument / cursor
-                    </p>
-                  </div>
-                  <div className="mt-4 flex flex-wrap items-end gap-4">
-                    <span className="font-mono text-[clamp(3.5rem,7vw,6.5rem)] leading-none text-white">
-                      {year}
-                    </span>
-                    <div className="mb-2 flex items-center gap-1">
-                      <button
-                        onClick={() => setYear((current) => Math.max(startYear, current - 1))}
-                        className="flex size-8 items-center justify-center border border-line text-muted hover:border-gold/50 hover:text-gold"
-                        aria-label="Previous year"
-                      >
-                        <ChevronLeft className="size-4" />
-                      </button>
-                      <button
-                        onClick={() => setYear((current) => Math.min(endYear, current + 1))}
-                        className="flex size-8 items-center justify-center border border-line text-muted hover:border-gold/50 hover:text-gold"
-                        aria-label="Next year"
-                      >
-                        <ChevronRight className="size-4" />
-                      </button>
-                    </div>
-                    <span className="mb-2 border-l border-line-bright pl-3 font-mono text-[8px] uppercase leading-5 tracking-[0.12em] text-muted">
-                      {filtered.length} events
-                      <br />
-                      in view
-                    </span>
-                  </div>
-                </div>
-                <button
-                  onClick={reset}
-                  className="flex items-center gap-1.5 border border-line px-3 py-2 font-mono text-[8px] uppercase tracking-[0.12em] text-muted transition-colors hover:border-gold/40 hover:text-gold"
-                >
-                  <RotateCcw className="size-3" />
-                  Reset view
-                </button>
-              </div>
-
-              <div className="mt-6">
-                <div className="flex h-16 items-end gap-[3px]">
-                  {density.map((bar) => (
-                    <button
-                      key={bar.year}
-                      onClick={() => setYear(bar.year)}
-                      className="group relative flex h-full flex-1 items-end"
-                      title={`Jump to ${bar.year}: ${bar.count} event${bar.count === 1 ? "" : "s"}`}
-                      aria-label={`Jump to ${bar.year}, ${bar.count} events`}
-                    >
-                      <span
-                        className={cn(
-                          "w-full transition-colors",
-                          bar.year === year
-                            ? "bg-gold"
-                            : bar.active
-                              ? "bg-teal/55 group-hover:bg-teal-bright"
-                              : "bg-line/50",
-                        )}
-                        style={{ height: `${bar.height}px` }}
-                      />
-                    </button>
-                  ))}
-                </div>
-                <input
-                  type="range"
-                  min={startYear}
-                  max={endYear}
-                  value={year}
-                  onChange={(event) => setYear(Number(event.target.value))}
-                  className="mt-3 h-1 w-full cursor-pointer appearance-none bg-line-bright accent-gold"
-                  aria-label="Timeline year"
-                />
-                <div className="mt-2 flex justify-between font-mono text-[7px] uppercase tracking-[0.1em] text-muted">
-                  <span>{startYear}</span>
-                  <span>1980</span>
-                  <span>2000</span>
-                  <span>2020</span>
-                  <span>{endYear}</span>
-                </div>
-              </div>
-
-              <div className="mt-6 flex flex-col gap-3 border-t border-line/60 pt-4">
-                <div className="flex flex-wrap items-center gap-2">
-                  <div className="flex flex-wrap gap-1">
-                    {(["all", "Moon", "Mars"] as const).map((item) => (
-                      <button
-                        key={item}
-                        onClick={() => setDestination(item)}
-                        className={cn(
-                          "border px-3 py-2 font-mono text-[8px] uppercase tracking-[0.12em] transition-colors",
-                          destination === item
-                            ? "border-teal bg-teal/10 text-teal-bright"
-                            : "border-line text-muted hover:border-line-bright hover:text-silver",
-                        )}
-                      >
-                        {item === "all" ? "Both worlds" : item}
-                      </button>
-                    ))}
-                  </div>
-                  <select
-                    value={mission}
-                    onChange={(event) => setMission(event.target.value)}
-                    className="h-9 max-w-[210px] border border-line bg-void/50 px-2.5 font-mono text-[8px] uppercase tracking-[0.1em] text-silver focus:border-teal focus:outline-none"
-                    aria-label="Filter by mission"
-                  >
-                    <option value="all">All missions</option>
-                    {missions.map((missionName) => (
-                      <option key={missionName} value={missionName}>
-                        {missionName}
-                      </option>
-                    ))}
-                  </select>
-                  <select
-                    value={type}
-                    onChange={(event) =>
-                      setType(
-                        event.target.value as "all" | TimelineEvent["type"],
-                      )
-                    }
-                    className="h-9 border border-line bg-void/50 px-2.5 font-mono text-[8px] uppercase tracking-[0.1em] text-silver focus:border-teal focus:outline-none"
-                    aria-label="Filter by event type"
-                  >
-                    {eventTypes.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </select>
-                  <label className="relative ml-auto block">
-                    <span className="sr-only">Search events</span>
-                    <Search className="absolute left-2.5 top-1/2 size-3 -translate-y-1/2 text-muted" />
-                    <input
-                      value={query}
-                      onChange={(event) => setQuery(event.target.value)}
-                      placeholder="Search events"
-                      className="h-9 w-44 border border-line bg-void/50 pl-8 pr-2 font-mono text-[9px] text-silver placeholder:text-muted/60 focus:border-teal focus:outline-none"
-                    />
-                  </label>
-                </div>
-                {(destination !== "all" || type !== "all" || mission !== "all" || query) && (
-                  <div className="flex items-center justify-between border border-line/50 px-3 py-2">
-                    <span className="font-mono text-[7px] uppercase tracking-[0.1em] text-muted">
-                      {filtered.length} matching records
-                    </span>
-                    <button
-                      onClick={reset}
-                      className="font-mono text-[7px] uppercase tracking-[0.1em] text-gold hover:text-white"
-                    >
-                      Clear filters
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
-          </section>
-
-          <div className="mt-3 flex items-center justify-between border border-line/50 px-4 py-2.5">
-            <p className="font-mono text-[8px] uppercase tracking-[0.12em] text-muted">
-              Chronological record / {decades.length} decades
-            </p>
-            <p className="font-mono text-[7px] uppercase tracking-[0.1em] text-muted/60">
-              Select a record to inspect its sources
-            </p>
-          </div>
-
-          <div className="mt-8 lg:hidden">
-            <SelectedPanel event={selected} mobile />
-          </div>
-
-          {decades.length === 0 && (
-            <div className="mt-4 border border-line/60 p-10 text-center">
-              <p className="text-sm text-muted">No events match this view.</p>
+      {/* Density chronograph */}
+      <div className="border border-line/60 bg-abyss/40 p-4">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <p className="font-mono text-[8px] uppercase tracking-[0.16em] text-muted">
+            Event density
+          </p>
+          <p className="font-mono text-[8px] uppercase tracking-[0.12em] text-muted/70">
+            {startYear} — {endYear}
+          </p>
+        </div>
+        <div className="mt-3 flex h-16 items-end gap-[2px]">
+          {[...yearCounts.entries()].map(([year, counts]) => {
+            const total = counts.moon + counts.mars;
+            const height = total === 0 ? 2 : Math.max(6, (total / maxYear) * 100);
+            const background =
+              counts.moon > 0 && counts.mars > 0
+                ? "linear-gradient(180deg, #e4b44c 0%, #e4b44c 50%, #39b9c9 50%, #39b9c9 100%)"
+                : counts.mars > 0
+                  ? "#e4b44c"
+                  : "#39b9c9";
+            return (
               <button
-                onClick={reset}
-                className="mt-4 font-mono text-[8px] uppercase tracking-[0.12em] text-gold"
+                key={year}
+                type="button"
+                onClick={() => scrollToId(`era-${Math.floor(year / 10) * 10}`)}
+                title={`${year} · ${total} event${total === 1 ? "" : "s"}`}
+                aria-label={`Jump to ${year}, ${total} events`}
+                className="group relative flex-1 rounded-t-[1px] transition-opacity hover:opacity-100"
+                style={{ height: "100%" }}
               >
-                Reset the timeline
+                <span
+                  className="absolute inset-x-0 bottom-0 opacity-60 transition-opacity group-hover:opacity-100"
+                  style={{ height: `${height}%`, background }}
+                />
+              </button>
+            );
+          })}
+        </div>
+        <div className="relative mt-1 h-3">
+          {[1970, 1980, 1990, 2000, 2010, 2020].map((year) => {
+            const left = ((year - startYear) / Math.max(1, endYear - startYear)) * 100;
+            return (
+              <span
+                key={year}
+                className="absolute top-0 -translate-x-1/2 font-mono text-[7px] tracking-[0.1em] text-muted/70"
+                style={{ left: `${left}%` }}
+              >
+                {year}
+              </span>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="mt-6 grid gap-8 lg:grid-cols-[280px_minmax(0,1fr)]">
+        {/* Controls */}
+        <aside className="space-y-4 lg:sticky lg:top-[92px] lg:h-fit">
+          <div className="border border-line/70 bg-panel/25 p-4">
+            <div className="grid grid-cols-3 gap-px border border-line/60 bg-line/50">
+              <Stat value={filtered.length} label="Events" />
+              <Stat value={objectCount} label="Objects" />
+              <Stat value={missionCount} label="Missions" />
+            </div>
+
+            <p className="mt-5 font-mono text-[8px] uppercase tracking-[0.16em] text-muted">
+              World
+            </p>
+            <div className="mt-2 grid grid-cols-3 gap-1">
+              {[
+                { value: "all" as const, label: "All" },
+                { value: "Moon" as const, label: `Moon ${moonCount}` },
+                { value: "Mars" as const, label: `Mars ${marsCount}` },
+              ].map((option) => (
+                <button
+                  key={option.value}
+                  type="button"
+                  onClick={() => setDestination(option.value)}
+                  className={cn(
+                    "border px-2 py-2 font-mono text-[8px] uppercase tracking-[0.1em] transition-colors",
+                    destination === option.value
+                      ? "border-teal-bright/60 bg-teal/10 text-teal-bright"
+                      : "border-line/60 text-muted hover:border-line-bright hover:text-silver",
+                  )}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+
+            <label className="mt-5 block">
+              <span className="font-mono text-[8px] uppercase tracking-[0.16em] text-muted">
+                Search
+              </span>
+              <span className="mt-2 flex items-center gap-2 border border-line/70 bg-abyss/60 px-2.5 py-2">
+                <Search className="size-3.5 text-muted" />
+                <input
+                  value={query}
+                  onChange={(event) => setQuery(event.target.value)}
+                  placeholder="Mission, object, event…"
+                  className="w-full bg-transparent text-xs text-silver outline-none placeholder:text-muted/60"
+                />
+                {query && (
+                  <button
+                    type="button"
+                    onClick={() => setQuery("")}
+                    aria-label="Clear search"
+                    className="text-muted hover:text-silver"
+                  >
+                    <X className="size-3.5" />
+                  </button>
+                )}
+              </span>
+            </label>
+
+            <p className="mt-5 font-mono text-[8px] uppercase tracking-[0.16em] text-muted">
+              Event type
+            </p>
+            <div className="mt-2 flex flex-wrap gap-1.5">
+              {eventTypes.map((option) => (
+                <button
+                  key={option.value}
+                  type="button"
+                  onClick={() => setType(option.value)}
+                  className={cn(
+                    "border px-2 py-1.5 font-mono text-[7px] uppercase tracking-[0.1em] transition-colors",
+                    type === option.value
+                      ? "border-gold/60 bg-gold/10 text-gold"
+                      : "border-line/60 text-muted hover:border-line-bright hover:text-silver",
+                  )}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+
+            <div className="mt-5 flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setSort(sort === "asc" ? "desc" : "asc")}
+                className="flex flex-1 items-center justify-center gap-2 border border-line/60 px-2 py-2 font-mono text-[8px] uppercase tracking-[0.1em] text-muted transition-colors hover:border-line-bright hover:text-silver"
+              >
+                <ArrowDownUp className="size-3" />
+                {sort === "asc" ? "Oldest first" : "Newest first"}
+              </button>
+              <button
+                type="button"
+                onClick={reset}
+                aria-label="Reset timeline filters"
+                className="flex size-9 items-center justify-center border border-line/60 text-muted transition-colors hover:border-gold hover:text-gold"
+              >
+                <RotateCcw className="size-3.5" />
               </button>
             </div>
+          </div>
+
+          {decades.length > 0 && (
+            <div className="hidden border border-line/70 bg-panel/25 p-4 lg:block">
+              <p className="font-mono text-[8px] uppercase tracking-[0.16em] text-muted">
+                Eras
+              </p>
+              <div className="mt-2 space-y-1">
+                {decades.map(([decade, count]) => (
+                  <button
+                    key={decade}
+                    type="button"
+                    onClick={() => scrollToId(`era-${decade}`)}
+                    className="flex w-full items-center justify-between border border-transparent px-2 py-1.5 font-mono text-[9px] text-muted transition-colors hover:border-line/60 hover:text-silver"
+                  >
+                    <span>{decade}s</span>
+                    <span className="text-muted/60">{count}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
           )}
+        </aside>
 
-          <div className="mt-10 space-y-14">
-            {decades.map(([decade, decadeEvents]) => (
-              <section
-                key={decade}
-                id={`decade-${decade}`}
-                className="scroll-mt-28"
+        {/* Timeline */}
+        <div className="min-w-0">
+          {filtered.length === 0 ? (
+            <div className="border border-line/70 bg-panel/20 p-10 text-center">
+              <CalendarRange className="mx-auto size-8 text-muted" />
+              <p className="mt-4 text-sm text-silver">No events match those filters.</p>
+              <button
+                type="button"
+                onClick={reset}
+                className="mt-5 inline-flex items-center gap-2 border border-gold/60 px-4 py-2 font-mono text-[8px] uppercase tracking-[0.12em] text-gold"
               >
-                <div className="flex items-end gap-4 border-b border-line/70 pb-3">
-                  <h2 className="font-mono text-4xl leading-none text-silver/80 md:text-5xl">
-                    {decade}
-                  </h2>
-                  <span className="mb-1 font-mono text-[8px] uppercase tracking-[0.12em] text-muted">
-                    {decadeEvents.length} records
-                  </span>
-                  <span className="mb-1 h-px flex-1 bg-line/50" />
-                </div>
+                Reset timeline
+                <ArrowRight className="size-3" />
+              </button>
+            </div>
+          ) : (
+            <div className="space-y-8">
+              {grouped.map(([decade, decadeEvents]) => (
+                <section key={decade} id={`era-${decade}`} className="scroll-mt-24">
+                  <div className="sticky top-[68px] z-10 -ml-[9px] mb-3 flex items-baseline gap-3 border-b border-line/60 bg-abyss/95 py-3 pl-[9px] backdrop-blur-sm">
+                    <span className="font-mono text-2xl leading-none text-white">
+                      {decade}s
+                    </span>
+                    <span className="font-mono text-[8px] uppercase tracking-[0.14em] text-muted">
+                      {decadeEvents.length} event{decadeEvents.length === 1 ? "" : "s"}
+                    </span>
+                  </div>
 
-                <div className="relative mt-1">
-                  <div className="absolute bottom-0 left-[8px] top-0 w-px bg-line/60 md:left-[10px]" />
-                  {decadeEvents.map((event, index) => {
-                    const Icon = typeIcon[event.type];
-                    const active = selected?.id === event.id;
-                    return (
-                      <motion.button
-                        key={`${event.relicId}-${event.id}`}
-                        onClick={() => setSelectedId(event.id)}
-                        initial={{ opacity: 0, y: 6 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true, margin: "-30px" }}
-                        transition={{
-                          duration: 0.3,
-                          delay: Math.min(index * 0.02, 0.14),
-                        }}
-                        className={cn(
-                          "group relative grid w-full grid-cols-[52px_minmax(0,1fr)] gap-4 py-2 text-left md:grid-cols-[70px_minmax(0,1fr)]",
-                        )}
-                      >
-                        <div className="relative pt-1">
-                          <span
-                            className={cn(
-                              "absolute left-[4px] top-3 z-10 size-[9px] rounded-full border md:left-[6px]",
-                              active
-                                ? "border-gold bg-gold shadow-[0_0_10px_rgba(228,180,76,.55)]"
-                                : "border-line-bright bg-abyss group-hover:border-teal",
-                            )}
-                          />
-                          <span className="block pl-6 font-mono text-[10px] text-muted group-hover:text-gold md:pl-7">
-                            {event.date.slice(0, 4)}
-                          </span>
-                        </div>
-                        <div
-                          className={cn(
-                            "flex items-start gap-3 border-b border-line/40 pb-4 pl-2 pr-2 transition-colors",
-                            active
-                              ? "bg-gold/[0.035]"
-                              : "group-hover:bg-white/[0.018]",
-                          )}
+                  <ol className="relative ml-[7px] border-l border-line/60">
+                    {decadeEvents.map((event) => {
+                      const expanded = expandedId === event.id;
+                      const Icon = typeIcon[event.type];
+                      const primary = event.significance === "primary";
+                      return (
+                        <li
+                          key={event.id}
+                          id={`event-${event.id}`}
+                          className="relative scroll-mt-28 pb-3 pl-6 sm:pl-8"
                         >
                           <span
                             className={cn(
-                              "mt-0.5 flex size-7 shrink-0 items-center justify-center border",
-                              typeTone[event.type],
-                            )}
-                          >
-                            <Icon className="size-3" />
-                          </span>
-                          <span className="min-w-0 flex-1">
-                            <span className="flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-[7px] uppercase tracking-[0.1em]">
-                              <span className={typeTone[event.type].split(" ")[0]}>
-                                {typeLabel[event.type]}
-                              </span>
-                              <span className="text-muted/40">/</span>
-                              <span className="text-muted">{event.mission}</span>
-                              <span className="text-muted/40">/</span>
-                              <span className="text-muted">
-                                {event.destination}
-                              </span>
-                              <span className="text-muted/40">/</span>
-                              <span className="text-muted/70">
-                                {event.dateLabel}
-                              </span>
-                            </span>
-                            <span
-                              className={cn(
-                                "mt-1.5 block text-base font-medium leading-6 tracking-[-0.015em] transition-colors",
-                                active
-                                  ? "text-white"
-                                  : "text-silver/85 group-hover:text-white",
-                              )}
-                            >
-                              {event.title}
-                            </span>
-                            <span className="mt-1 block line-clamp-2 text-xs leading-5 text-muted">
-                              {event.summary}
-                            </span>
-                          </span>
-                          <ArrowRight
-                            className={cn(
-                              "mt-1 size-3.5 shrink-0 transition-all",
-                              active
-                                ? "text-gold"
-                                : "text-muted/30 group-hover:translate-x-0.5 group-hover:text-gold",
+                              "absolute -left-[4.5px] top-5 size-2 rounded-full border",
+                              event.destination === "Moon"
+                                ? "border-teal-bright bg-abyss"
+                                : "border-gold bg-abyss",
+                              expanded && "bg-current",
                             )}
                           />
-                        </div>
-                      </motion.button>
-                    );
-                  })}
-                </div>
-              </section>
-            ))}
-          </div>
-        </div>
+                          <div className="grid gap-2 sm:grid-cols-[86px_minmax(0,1fr)]">
+                            <div className="pt-4 font-mono text-[8px] uppercase tracking-[0.1em] text-muted">
+                              {event.dateLabel}
+                            </div>
+                            <article
+                              className={cn(
+                                "border bg-panel/25 transition-colors",
+                                expanded
+                                  ? "border-teal/50"
+                                  : "border-line/70 hover:border-line-bright",
+                              )}
+                            >
+                              <button
+                                type="button"
+                                aria-expanded={expanded}
+                                onClick={() =>
+                                  setExpandedId(expanded ? null : event.id)
+                                }
+                                className="w-full p-4 text-left"
+                              >
+                                <div className="flex flex-wrap items-center gap-2">
+                                  <span
+                                    className={cn(
+                                      "inline-flex items-center gap-1.5 border px-2 py-1 font-mono text-[7px] uppercase tracking-[0.12em]",
+                                      typeTone[event.type],
+                                    )}
+                                  >
+                                    <Icon className="size-3" />
+                                    {typeLabel[event.type]}
+                                  </span>
+                                  <span
+                                    className={cn(
+                                      "font-mono text-[7px] uppercase tracking-[0.12em]",
+                                      event.destination === "Moon"
+                                        ? "text-teal-bright"
+                                        : "text-gold",
+                                    )}
+                                  >
+                                    {event.destination}
+                                  </span>
+                                  {primary && (
+                                    <span className="border border-gold/40 px-2 py-1 font-mono text-[7px] uppercase tracking-[0.1em] text-gold/80">
+                                      Primary
+                                    </span>
+                                  )}
+                                </div>
+                                <h3 className="mt-3 text-base font-medium leading-snug text-white">
+                                  {event.title}
+                                </h3>
+                                <p className="mt-1 font-mono text-[8px] uppercase tracking-[0.1em] text-muted">
+                                  {event.mission}
+                                  {event.relicName !== event.mission
+                                    ? ` · ${event.relicName}`
+                                    : ""}
+                                </p>
+                                <p
+                                  className={cn(
+                                    "mt-3 text-xs leading-6 text-silver/70",
+                                    !expanded && "line-clamp-2",
+                                  )}
+                                >
+                                  {event.summary}
+                                </p>
+                                <span className="mt-3 inline-flex items-center gap-1.5 font-mono text-[8px] uppercase tracking-[0.12em] text-teal-bright">
+                                  {expanded ? "Close record" : "Inspect event"}
+                                  <ChevronDown
+                                    className={cn(
+                                      "size-3 transition-transform",
+                                      expanded && "rotate-180",
+                                    )}
+                                  />
+                                </span>
+                              </button>
 
-        <aside className="hidden lg:block">
-          <div className="sticky top-24 space-y-4">
-            <SelectedPanel event={selected} />
-            <div className="border border-line/70 bg-panel/20 p-4">
-              <p className="font-mono text-[8px] uppercase tracking-[0.16em] text-muted">
-                Decade index
-              </p>
-              <div className="mt-3 grid grid-cols-2 gap-1.5">
-                {[
-                  "1960s",
-                  "1970s",
-                  "1980s",
-                  "1990s",
-                  "2000s",
-                  "2010s",
-                  "2020s",
-                ].map((decade) => {
-                  const available = decades.some(
-                    ([label]) => label === decade,
-                  );
-                  return (
-                    <button
-                      key={decade}
-                      disabled={!available}
-                      onClick={() =>
-                        document
-                          .getElementById(`decade-${decade}`)
-                          ?.scrollIntoView({
-                            behavior: "smooth",
-                            block: "start",
-                          })
-                      }
-                      className={cn(
-                        "flex items-center justify-between border px-2.5 py-2 font-mono text-[8px] uppercase tracking-[0.1em] transition-colors",
-                        available
-                          ? "border-line/60 text-muted hover:border-teal/40 hover:text-teal-bright"
-                          : "border-line/30 text-muted/30",
-                      )}
-                    >
-                      {decade}
-                      <span>
-                        {String(
-                          events.filter(
-                            (event) =>
-                              event.date.startsWith(decade.slice(0, 3)) &&
-                              Number(event.date.slice(0, 4)) <= year,
-                          ).length,
-                        ).padStart(2, "0")}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
+                              {expanded && (
+                                <div className="animate-fade-up border-t border-line/60 p-4">
+                                  <div className="flex flex-wrap items-center gap-2">
+                                    <Link
+                                      href={`/relics/${event.relicId}`}
+                                      className="inline-flex items-center gap-2 border border-gold bg-gold px-3 py-2 font-mono text-[8px] uppercase tracking-[0.12em] text-abyss transition-colors hover:bg-[#f2c76a]"
+                                    >
+                                      Open object record
+                                      <ArrowUpRight className="size-3" />
+                                    </Link>
+                                    <Link
+                                      href={`/rex/relic/${event.relicId}`}
+                                      className="inline-flex items-center gap-2 border border-line-bright px-3 py-2 font-mono text-[8px] uppercase tracking-[0.12em] text-silver transition-colors hover:border-teal-bright hover:text-white"
+                                    >
+                                      REX field study
+                                      <ArrowRight className="size-3" />
+                                    </Link>
+                                  </div>
+                                  <p className="mt-5 font-mono text-[8px] uppercase tracking-[0.16em] text-muted">
+                                    Sources
+                                  </p>
+                                  <ul className="mt-2 grid gap-2 sm:grid-cols-2">
+                                    {event.sources.map((source) => (
+                                      <li key={source.id}>
+                                        <a
+                                          href={source.url}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className="flex items-start justify-between gap-3 border border-line/60 px-3 py-2 text-[11px] leading-5 text-silver/80 transition-colors hover:border-teal/50 hover:text-white"
+                                        >
+                                          <span>
+                                            {source.title}
+                                            <span className="mt-0.5 block font-mono text-[7px] uppercase tracking-[0.1em] text-muted">
+                                              {source.organization}
+                                            </span>
+                                          </span>
+                                          <ArrowUpRight className="mt-0.5 size-3 shrink-0 text-muted" />
+                                        </a>
+                                      </li>
+                                    ))}
+                                  </ul>
+                                </div>
+                              )}
+                            </article>
+                          </div>
+                        </li>
+                      );
+                    })}
+                  </ol>
+                </section>
+              ))}
             </div>
-            <div className="border border-line/60 px-4 py-3">
-              <div className="flex flex-wrap gap-x-4 gap-y-2 font-mono text-[7px] uppercase tracking-[0.1em] text-muted">
-                <span className="flex items-center gap-1.5">
-                  <span className="size-1.5 rounded-full bg-gold" /> Moon
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <span className="size-1.5 rounded-full bg-teal-bright" /> Mars
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <span className="size-1.5 rounded-full bg-[#c9867c]" /> Loss
-                </span>
-              </div>
-            </div>
-          </div>
-        </aside>
+          )}
+        </div>
       </div>
     </div>
   );
 }
 
-function SelectedPanel({
-  event,
-  mobile = false,
-}: {
-  event: TimelineEventWithSources | null;
-  mobile?: boolean;
-}) {
-  if (!event) {
-    return (
-      <div className="border border-line/60 bg-panel/20 p-5 font-mono text-[8px] uppercase tracking-[0.1em] text-muted">
-        No record selected.
-      </div>
-    );
-  }
+function Stat({ value, label }: { value: number; label: string }) {
   return (
-    <div
-      className={cn(
-        "border border-line/80 bg-[linear-gradient(145deg,rgba(13,34,49,.8),rgba(7,19,31,.92))]",
-        mobile ? "p-4" : "p-5",
-      )}
-    >
-      <div className="flex items-start justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <Orbit className="size-3.5 text-gold" />
-          <p className="font-mono text-[8px] uppercase tracking-[0.16em] text-gold">
-            Selected record
-          </p>
-        </div>
-        <span className="font-mono text-[7px] uppercase tracking-[0.1em] text-muted">
-          {event.dateLabel}
-        </span>
-      </div>
-      <h3 className="mt-4 text-xl font-medium leading-tight tracking-[-0.025em] text-white">
-        {event.title}
-      </h3>
-      <p className="mt-2 font-mono text-[7px] uppercase tracking-[0.11em] text-muted">
-        {event.mission} / {event.destination} / {typeLabel[event.type]}
+    <div className="bg-panel/70 px-2 py-2.5 text-center">
+      <p className="font-mono text-lg leading-none text-silver">
+        {String(value).padStart(2, "0")}
       </p>
-      <p className="mt-4 text-xs leading-6 text-silver/70">{event.summary}</p>
-      <div className="mt-4 space-y-2 border-t border-line/50 pt-4">
-        <p className="font-mono text-[7px] uppercase tracking-[0.12em] text-muted">
-          Source records
-        </p>
-        {event.sources.map((source) => (
-          <a
-            key={source.id}
-            href={source.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group flex items-start gap-2 border border-line/50 p-2.5 transition-colors hover:border-teal/40"
-          >
-            <Radio className="mt-0.5 size-3 shrink-0 text-teal" />
-            <span className="min-w-0 flex-1">
-              <span className="block truncate text-[10px] leading-4 text-silver/80 group-hover:text-white">
-                {source.title}
-              </span>
-              <span className="mt-0.5 block font-mono text-[6px] uppercase tracking-[0.1em] text-muted">
-                {source.organization}
-              </span>
-            </span>
-            <ArrowUpRight className="mt-0.5 size-3 shrink-0 text-muted group-hover:text-gold" />
-          </a>
-        ))}
-      </div>
-      <Link
-        href={`/relics/${event.relicId}`}
-        className="mt-4 flex items-center justify-between border border-gold/50 bg-gold/[0.06] px-3 py-2.5 font-mono text-[8px] uppercase tracking-[0.12em] text-gold transition-colors hover:border-gold hover:bg-gold/10"
-      >
-        Open {event.relicName}
-        <ArrowRight className="size-3" />
-      </Link>
+      <p className="mt-1.5 font-mono text-[6px] uppercase tracking-[0.1em] text-muted">
+        {label}
+      </p>
     </div>
   );
 }

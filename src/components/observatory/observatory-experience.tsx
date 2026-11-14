@@ -26,6 +26,8 @@ type HeroStats = {
   worlds: number;
   missions: number;
   active: number;
+  catalogue: number;
+  artifacts3d: number;
 };
 
 export function ObservatoryExperience({
@@ -161,10 +163,10 @@ export function ObservatoryExperience({
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-3">
               <Link
-                href="/explore"
+                href="/observatory"
                 className="group inline-flex min-h-12 items-center gap-3 border border-gold bg-gold px-6 py-4 font-mono text-[10px] uppercase tracking-[0.16em] text-abyss transition-colors hover:bg-[#f2c76a]"
               >
-                Enter the Observatory
+                Enter the 3D Observatory
                 <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
               </Link>
               <Link
@@ -176,8 +178,9 @@ export function ObservatoryExperience({
               </Link>
             </div>
             <p className="mt-5 font-mono text-[8px] uppercase tracking-[0.14em] text-muted">
-              {stats.relics} object records · {stats.worlds} worlds ·{" "}
-              {stats.missions} missions · sources attached
+              {stats.relics + stats.catalogue} archive records ·{" "}
+              {stats.artifacts3d} 3D artifacts · {stats.worlds} worlds · sources
+              attached
             </p>
           </div>
 
@@ -241,8 +244,8 @@ export function ObservatoryExperience({
           <div className="pointer-events-auto">
             <div className="grid grid-cols-2 gap-x-6 gap-y-4 border-t border-line/60 pt-4 sm:grid-cols-4">
               <Stat icon={<Boxes />} label="Object records" value={String(stats.relics).padStart(2, "0")} />
-              <Stat icon={<Globe2 />} label="Worlds mapped" value={String(stats.worlds).padStart(2, "0")} />
-              <Stat icon={<Layers3 />} label="Missions" value={String(stats.missions).padStart(2, "0")} />
+              <Stat icon={<Layers3 />} label="Catalogue records" value={String(stats.catalogue).padStart(2, "0")} />
+              <Stat icon={<Globe2 />} label="3D artifacts" value={String(stats.artifacts3d).padStart(2, "0")} />
               <Stat icon={<Crosshair />} label="Still detectable" value={String(stats.active).padStart(2, "0")} />
             </div>
             <p className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 font-mono text-[8px] uppercase tracking-[0.14em] text-muted/70">

@@ -5,10 +5,10 @@ const routes = [
   "/explore",
   "/catalog",
   "/timeline",
-  "/evidence",
-  "/legacy",
-  "/archaeologist",
   "/about",
+  "/observatory",
+  "/catalog/dawn",
+  "/catalog/kepler",
   "/rex",
   "/rex/journal",
   "/rex/chapter/the-departure",
@@ -67,34 +67,10 @@ for (const route of routes) {
   }
 }
 
-try {
-  const response = await fetch(`${base}/api/assistant`, {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({
-      message: "Why was this object left behind?",
-      relicId: "apollo-11-lunar-module",
-      level: "archivist",
-      history: [],
-    }),
-  });
-  const data = await response.json();
-  if (response.ok && data.mode === "demo" && data.citations?.length > 0) {
-    console.log("OK   200 /api/assistant demo response");
-  } else {
-    failures += 1;
-    console.error(
-      `FAIL /api/assistant: ${response.status} ${JSON.stringify(data).slice(0, 240)}`,
-    );
-  }
-} catch (error) {
-  failures += 1;
-  console.error(`FAIL /api/assistant: ${error.message}`);
-}
-
 if (failures > 0) {
   console.error(`\n${failures} smoke test(s) failed.`);
   process.exit(1);
 }
 
-console.log("\nAll SPACE RELICS smoke tests passed.");
+console.log("\nAll R7LA smoke tests passed.");
+

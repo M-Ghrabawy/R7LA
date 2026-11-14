@@ -2,7 +2,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import type { ResolvedArtifact } from "@/lib/schema";
-import { computeLegacyTotal } from "@/lib/data";
 import { OperationalBadge } from "@/components/shared/status-badge";
 import { cn } from "@/lib/utils";
 
@@ -16,7 +15,6 @@ export function RelicCard({
   className?: string;
 }) {
   const image = relic.images[0];
-  const score = computeLegacyTotal(relic.legacy);
 
   return (
     <Link
@@ -63,7 +61,7 @@ export function RelicCard({
         <div className="mt-auto flex items-end justify-between gap-4 pt-6">
           <OperationalBadge status={relic.operationalStatus} />
           <div className="flex items-center gap-2 font-mono text-[8px] uppercase tracking-[0.12em] text-muted">
-            <span>Editorial {score}</span>
+            <span>View record</span>
             <ArrowUpRight className="size-3 text-gold transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
           </div>
         </div>

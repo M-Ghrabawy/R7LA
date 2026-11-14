@@ -83,6 +83,26 @@ export function PuzzlePanel({
       />
     );
   }
+  if (puzzle.type === "path") {
+    return (
+      <PathPuzzle
+        puzzle={puzzle}
+        solved={solved}
+        onSolved={onSolved}
+        play={play}
+      />
+    );
+  }
+  if (puzzle.type === "allocate") {
+    return (
+      <AllocatePuzzle
+        puzzle={puzzle}
+        solved={solved}
+        onSolved={onSolved}
+        play={play}
+      />
+    );
+  }
   if (puzzle.type === "signal") {
     return (
       <SignalPuzzle
@@ -612,6 +632,303 @@ function SignalPuzzle({
       >
         <Check className="size-3" />
         Lock return signal
+      </button>
+    </Frame>
+  );
+}
+
+function PathPuzzle({
+  puzzle,
+  solved,
+  onSolved,
+  play,
+}: {
+  puzzle: Extract<Puzzle, { type: "path" }>;
+  solved: boolean;
+  onSolved: () => void;
+  play: (sound: Sound) => void;
+}) {
+  const [path, setPath] = useState<Array<{ x: number; y: number }>>([
+    puzzle.start,
+  ]);
+  const [foundTargets, setFoundTargets] = useState<string[]>([]);
+  const [feedback, setFeedback] = useState(
+    "Select adjacent cells to plan a traverse. Collect every science target.",
+  );
+  const current = path[path.length - 1];
+
+  const moveTo = (x: number, y: number) => {
+    if (solved) return;
+    const isAdjacent =
+      Math.abs(current.x - x) + Math.abs(current.y - y) === 1;
+    const blocked = puzzle.obstacles.some(
+      (obstacle) => obstacle.x === x && obstacle.y === y,
+    );
+    const visited = path.some((cell) => cell.x === x && cell.y === y);
+    if (!isAdjacent || blocked || visited) {
+      play("error");
+      setFeedback(
+        blocked
+          ? "Traverse blocked by hazardous terrain."
+          : "Choose an adjacent, unvisited cell.",
+      );
+      return;
+    }
+    if (path.length - 1 >= puzzle.maxSteps) {
+      play("error");
+      setFeedback("Battery budget exhausted. Reset the route and try again.");
+      return;
+    }
+    const nextPath = [...path, { x, y }];
+    setPath(nextPath);
+    play("click");
+    const target = puzzle.targets.find(
+      (item) => item.x === x && item.y === y && !foundTargets.includes(item.id),
+    );
+    const nextTargets = target
+      ? [...foundTargets, target.id]
+      : foundTargets;
+    if (target) {
+      setFoundTargets(nextTargets);
+      setFeedback(`Science target reached: ${target.label}.`);
+      play("reveal");
+    }
+    if (nextTargets.length === puzzle.targets.length) {
+      play("success");
+      setFeedback(puzzle.success);
+      onSolved();
+    }
+  };
+
+  return (
+    <Frame
+      prompt={puzzle.prompt}
+      feedback={feedback}
+      solved={solved}
+      hint={puzzle.hint}
+    >
+      <div
+        className="mx-auto grid max-w-[330px] gap-1"
+        style={{ gridTemplateColumns: `repeat(${puzzle.cols}, minmax(0, 1fr))` }}
+      >
+        {Array.from({ length: puzzle.cols * puzzle.rows }).map((_, index) => {
+          const x = index % puzzle.cols;
+          const y = Math.floor(index / puzzle.cols);
+          const isStart = puzzle.start.x === x && puzzle.start.y === y;
+          const target = puzzle.targets.find(
+            (item) => item.x === x && item.y === y,
+          );
+          const targetFound = target && foundTargets.includes(target.id);
+          const obstacle = puzzle.obstacles.some(
+            (item) => item.x === x && item.y === y,
+          );
+          const inPath = path.some((cell) => cell.x === x && cell.y === y);
+          const isCurrent = current.x === x && current.y === y;
+          return (
+            <button
+              key={index}
+              onClick={() => moveTo(x, y)}
+              disabled={solved}
+              className={cn(
+                "relative flex aspect-square items-center justify-center border font-mono text-[7px] transition-colors",
+                obstacle
+                  ? "border-[#c9867c]/25 bg-[#c9867c]/10 text-[#c9867c]"
+                  : isCurrent
+                    ? "border-gold bg-gold/15 text-gold"
+                    : targetFound
+                      ? "border-teal/50 bg-teal/10 text-teal-bright"
+                      : target
+                        ? "border-line bg-void/50 text-gold/70 hover:border-gold/50"
+                        : inPath
+                          ? "border-teal/30 bg-teal/[0.04] text-teal/60"
+                          : "border-line/50 bg-void/30 text-muted/30 hover:border-line-bright",
+              )}
+              aria-label={`Traverse cell ${x + 1}, ${y + 1}${target ? `, target ${target.label}` : ""}`}
+            >
+              {obstacle
+                ? "×"
+                : isCurrent
+                  ? "REX"
+                  : targetFound
+                    ? "✓"
+                    : target
+                      ? "◆"
+                      : isStart
+                        ? "S"
+                        : "·"}
+            </button>
+          );
+        })}
+      </div>
+      <div className="mt-2 flex items-center justify-between font-mono text-[7px] uppercase tracking-[0.08em] text-muted">
+        <span>Steps {path.length - 1}/{puzzle.maxSteps}</span>
+        <span>Targets {foundTargets.length}/{puzzle.targets.length}</span>
+        <button
+          onClick={() => {
+            setPath([puzzle.start]);
+            setFoundTargets([]);
+            setFeedback("Route reset.");
+            play("click");
+          }}
+          className="flex items-center gap-1 text-muted hover:text-gold"
+        >
+          <RotateCcw className="size-2.5" /> Reset route
+        </button>
+      </div>
+      <div className="mt-2 flex flex-wrap gap-1.5">
+        {puzzle.targets.map((target) => (
+          <span
+            key={target.id}
+            className={cn(
+              "border px-1.5 py-1 font-mono text-[6px] uppercase tracking-[0.08em]",
+              foundTargets.includes(target.id)
+                ? "border-teal/40 text-teal-bright"
+                : "border-line/50 text-muted/60",
+            )}
+          >
+            {target.label}
+          </span>
+        ))}
+      </div>
+    </Frame>
+  );
+}
+
+function AllocatePuzzle({
+  puzzle,
+  solved,
+  onSolved,
+  play,
+}: {
+  puzzle: Extract<Puzzle, { type: "allocate" }>;
+  solved: boolean;
+  onSolved: () => void;
+  play: (sound: Sound) => void;
+}) {
+  const [selected, setSelected] = useState<string[]>([]);
+  const [feedback, setFeedback] = useState(
+    "Allocate the limited budget. You do not need every system.",
+  );
+  const cost = puzzle.items
+    .filter((item) => selected.includes(item.id))
+    .reduce((sum, item) => sum + item.cost, 0);
+  const value = puzzle.items
+    .filter((item) => selected.includes(item.id))
+    .reduce((sum, item) => sum + item.value, 0);
+
+  const toggle = (id: string, itemCost: number) => {
+    if (solved) return;
+    if (selected.includes(id)) {
+      setSelected((current) => current.filter((item) => item !== id));
+      play("click");
+      return;
+    }
+    if (cost + itemCost > puzzle.budget) {
+      play("error");
+      setFeedback("Power budget exceeded. Turn off another system first.");
+      return;
+    }
+    setSelected((current) => [...current, id]);
+    play("click");
+  };
+
+  const commit = () => {
+    if (value >= puzzle.target && cost <= puzzle.budget) {
+      play("success");
+      setFeedback(puzzle.success);
+      onSolved();
+    } else {
+      play("error");
+      setFeedback(
+        `Allocation insufficient. Reach ${puzzle.target} science value within ${puzzle.budget} power units.`,
+      );
+    }
+  };
+
+  return (
+    <Frame
+      prompt={puzzle.prompt}
+      feedback={feedback}
+      solved={solved}
+      hint={puzzle.hint}
+    >
+      <div className="grid gap-1.5 sm:grid-cols-2">
+        {puzzle.items.map((item) => {
+          const active = selected.includes(item.id);
+          return (
+            <button
+              key={item.id}
+              onClick={() => toggle(item.id, item.cost)}
+              disabled={solved}
+              className={cn(
+                "border p-2.5 text-left transition-colors",
+                active
+                  ? "border-gold/50 bg-gold/[0.06]"
+                  : "border-line/60 hover:border-teal/40",
+              )}
+            >
+              <span className="flex items-start justify-between gap-2">
+                <span className="text-[11px] leading-4 text-silver">
+                  {item.label}
+                </span>
+                <span
+                  className={cn(
+                    "flex size-4 shrink-0 items-center justify-center border",
+                    active
+                      ? "border-gold bg-gold/20 text-gold"
+                      : "border-line",
+                  )}
+                >
+                  {active && <Check className="size-2.5" />}
+                </span>
+              </span>
+              <span className="mt-1 flex justify-between font-mono text-[6px] uppercase tracking-[0.08em] text-muted">
+                <span>{item.cost} power</span>
+                <span className="text-teal-bright">+{item.value} science</span>
+              </span>
+            </button>
+          );
+        })}
+      </div>
+      <div className="mt-3 grid grid-cols-2 gap-3">
+        <div>
+          <div className="flex justify-between font-mono text-[7px] uppercase tracking-[0.08em] text-muted">
+            <span>Power</span>
+            <span>{cost}/{puzzle.budget}</span>
+          </div>
+          <div className="mt-1 h-1.5 bg-line/60">
+            <div
+              className={cn(
+                "h-full transition-all",
+                cost > puzzle.budget * 0.85 ? "bg-[#c9867c]" : "bg-teal-bright",
+              )}
+              style={{ width: `${(cost / puzzle.budget) * 100}%` }}
+            />
+          </div>
+        </div>
+        <div>
+          <div className="flex justify-between font-mono text-[7px] uppercase tracking-[0.08em] text-muted">
+            <span>Science</span>
+            <span>{value}/{puzzle.target}</span>
+          </div>
+          <div className="mt-1 h-1.5 bg-line/60">
+            <div
+              className={cn(
+                "h-full transition-all",
+                value >= puzzle.target ? "bg-gold" : "bg-teal/50",
+              )}
+              style={{ width: `${Math.min(100, (value / puzzle.target) * 100)}%` }}
+            />
+          </div>
+        </div>
+      </div>
+      <button
+        onClick={commit}
+        disabled={solved}
+        className="mt-3 inline-flex items-center gap-2 border border-gold/60 bg-gold/10 px-3 py-2 font-mono text-[8px] uppercase tracking-[0.12em] text-gold disabled:opacity-40"
+      >
+        <Check className="size-3" />
+        Commit allocation
       </button>
     </Frame>
   );

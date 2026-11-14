@@ -1,0 +1,4 @@
+{
+  "description": "Register supplied custom 3D GLB artifact models here as [mission-id]: '/models/artifacts/[mission-id].glb'. Leave empty to use built-in procedural PBR assemblies.",
+  "models": {}
+}

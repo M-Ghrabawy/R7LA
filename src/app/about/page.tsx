@@ -6,7 +6,7 @@ import { archiveStats } from "@/lib/data";
 export const metadata: Metadata = {
   title: "About the Archive",
   description:
-    "About SPACE RELICS by AFTERLIGHT: data methodology, source policy, NASA media attribution, AI disclosure, and known limitations.",
+    "About R7LA by AFTERLIGHT: data methodology, source policy, NASA media attribution, and known limitations.",
 };
 
 const sourceGroups = [
@@ -73,7 +73,7 @@ export default function AboutPage() {
           <span className="text-gold"> traces.</span>
         </h1>
         <p className="mt-6 max-w-2xl text-sm leading-7 text-muted md:text-base">
-          SPACE RELICS is an independent digital space-archaeology archive built
+          R7LA is an independent digital space-archaeology archive built
           by AFTERLIGHT. It treats the objects humans leave on other worlds as
           evidence, heritage, and unfinished experiments.
         </p>
@@ -86,7 +86,7 @@ export default function AboutPage() {
           </h2>
           <div className="article-prose mt-6 max-w-2xl">
             <p>
-              SPACE RELICS documents human-made objects beyond Earth: descent
+              R7LA documents human-made objects beyond Earth: descent
               stages, instruments, rovers, landers, and the places they occupy.
               Each record combines mission history, physical and operational
               status, coordinates, a chronology, historical photography, an
@@ -104,10 +104,8 @@ export default function AboutPage() {
               described as abandoned.
             </p>
             <p>
-              The Legacy Score is an original editorial instrument by
-              AFTERLIGHT. It is not a NASA rating, an agency priority, or a
-              measure of human worth. It is a transparent way to explore how
-              different definitions of “importance” change the ranking.
+              The archive documents human-made objects beyond Earth: descent
+              stages, instruments, rovers, landers, and the places they occupy.
             </p>
           </div>
 
@@ -127,7 +125,7 @@ export default function AboutPage() {
               </p>
             </div>
             <p className="mt-4 text-sm leading-7 text-silver/75">
-              SPACE RELICS is not affiliated with, endorsed by, or operated by
+              R7LA is not affiliated with, endorsed by, or operated by
               NASA. NASA logos and insignia are not used. NASA imagery is
               presented with attribution and links to the NASA Image and Video
               Library. Any agency name appears only to identify a source or a
@@ -138,7 +136,7 @@ export default function AboutPage() {
                 Project
               </p>
               <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.16em] text-silver">
-                SPACE RELICS / AFTERLIGHT
+                R7LA / AFTERLIGHT
               </p>
               <p className="mt-1 font-mono text-[8px] uppercase tracking-[0.1em] text-muted">
                 Humanity&apos;s footprints beyond Earth
@@ -170,8 +168,8 @@ export default function AboutPage() {
             </h2>
             <p className="mt-4 max-w-md text-sm leading-7 text-muted">
               The dataset is separate from the interface and validated against a
-              runtime schema. Claims carry their own source references so the
-              evidence page and the AI assistant use the same provenance graph.
+              runtime schema. Claims carry their own source references, so every
+              record resolves to the same provenance graph.
             </p>
           </div>
           <div className="grid gap-8 sm:grid-cols-3 lg:col-span-8">
@@ -263,27 +261,14 @@ export default function AboutPage() {
           </div>
           <div className="border border-line/70 bg-panel/20 p-6">
             <p className="font-mono text-[9px] uppercase tracking-[0.16em] text-gold">
-              AI disclosure
+              Editorial disclosure
             </p>
             <p className="mt-4 text-[12px] leading-6 text-muted">
-              REX is a fictional AFTERLIGHT archive guide and the conversational
-              interface over this archive. Without an API key, the assistant runs
-              in a deterministic REX demo mode that generates answers from
-              structured records; no LLM is running. When a live provider is
-              configured, the interface labels that mode. In all cases, answers
-              are constrained to archive context, citations resolve to stored
-              sources, and hypothetical statements are marked. The AI does not
-              create citations. REX is not a NASA robot or agency system.
-            </p>
-            <p className="mt-3 font-mono text-[8px] uppercase leading-5 tracking-[0.1em] text-muted/60">
-              The five-chapter expedition, vector scenes, and REX dialogue are
-              interpretive fiction built around sourced records. Ambient audio
-              and interface cues are synthesized in the browser and muted until
-              the visitor enables sound.
-            </p>
-            <p className="mt-3 font-mono text-[8px] uppercase leading-5 tracking-[0.1em] text-muted/60">
-              Demo mode is not a simulation of a live model. It is plainly
-              labeled as a curated archive response.
+              REX is a fictional AFTERLIGHT archive guide. The five-chapter
+              expedition, vector scenes, and REX dialogue are interpretive
+              fiction built around sourced records. Ambient audio and interface
+              cues are synthesized in the browser and muted until the visitor
+              enables sound.
             </p>
           </div>
         </div>
@@ -304,10 +289,6 @@ export default function AboutPage() {
                 → No authentic NASA 3D model is bundled in this build. Object
                 schematics are original AFTERLIGHT visualizations and clearly
                 labeled.
-              </li>
-              <li>
-                → The Legacy Score is editorial. Its dimensions and weights are
-                transparent, but it is not an official rating.
               </li>
               <li>
                 → The archive is not a live mission-status feed. Active status is

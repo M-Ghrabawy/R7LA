@@ -31,8 +31,8 @@ export function Wordmark({ compact = false }: { compact?: boolean }) {
     <span className="flex items-center gap-3">
       <BrandMark className="size-7 text-gold" />
       <span className="flex flex-col leading-none">
-        <span className="text-[15px] font-semibold tracking-[0.22em] text-white">
-          SPACE RELICS
+        <span className="text-[15px] font-semibold tracking-[0.28em] text-white">
+          R7LA
         </span>
         {!compact && (
           <span className="mt-1.5 font-mono text-[7px] uppercase tracking-[0.34em] text-muted">

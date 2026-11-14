@@ -1,5 +1,9 @@
 import type { Chapter } from "@/lib/story/schema";
 import { moonChapter } from "./moon-chapter";
+import { chapterOne } from "./chapter-one";
+import { chapterThree } from "./chapter-three";
+import { chapterFour } from "./chapter-four";
+import { chapterFive } from "./chapter-five";
 
 const baseChapters: Chapter[] = [
   {
@@ -755,7 +759,7 @@ const baseChapters: Chapter[] = [
         id: "archive-open",
         kind: "archive",
         eyebrow: "Transmission complete / archive open",
-        title: "SPACE RELICS remains open.",
+        title: "R7LA remains open.",
         dialogue: [
           "REX mission status: archive transmitted.",
           "The stories remain here: the Moon, Mars, the evidence, and the questions.",
@@ -773,8 +777,16 @@ const baseChapters: Chapter[] = [
   },
 ];
 
-export const rexChapters = baseChapters.map((chapter) =>
-  chapter.id === moonChapter.id ? moonChapter : chapter,
+const overrides = new Map<string, Chapter>([
+  [chapterOne.id, chapterOne],
+  [moonChapter.id, moonChapter],
+  [chapterThree.id, chapterThree],
+  [chapterFour.id, chapterFour],
+  [chapterFive.id, chapterFive],
+]);
+
+export const rexChapters = baseChapters.map(
+  (chapter) => overrides.get(chapter.id) ?? chapter,
 );
 
 export const chaptersBySlug = new Map(

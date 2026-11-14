@@ -19,7 +19,10 @@ const stars = [
 ];
 
 function Backdrop({ background }: { background: SceneBackground }) {
-  const isMars = background === "mars" || background === "mars-dust";
+  const isMars =
+    background === "mars" ||
+    background === "mars-dust" ||
+    background === "mars-canyon";
   return (
     <svg
       viewBox="0 0 1000 600"
@@ -35,7 +38,9 @@ function Backdrop({ background }: { background: SceneBackground }) {
               <stop offset=".5" stopColor="#2b1714" />
               <stop offset="1" stopColor="#6f3324" />
             </>
-          ) : background === "observatory" || background === "archive" ? (
+          ) : background === "observatory" ||
+        background === "archive" ||
+        background === "data-lab" ? (
             <>
               <stop offset="0" stopColor="#031018" />
               <stop offset="1" stopColor="#071b27" />
@@ -71,6 +76,8 @@ function Backdrop({ background }: { background: SceneBackground }) {
 
       {(background === "deep-space" ||
         background === "earth-orbit" ||
+        background === "earthrise" ||
+        background === "transmission" ||
         background === "moon" ||
         background === "moon-crater") &&
         stars.map(([x, y], index) => (
@@ -100,7 +107,9 @@ function Backdrop({ background }: { background: SceneBackground }) {
         </>
       )}
 
-      {(background === "observatory" || background === "archive") && (
+      {(background === "observatory" ||
+        background === "archive" ||
+        background === "data-lab") && (
         <>
           <circle cx="500" cy="310" r="250" fill="none" stroke="#1b3542" strokeWidth="1" />
           <circle cx="500" cy="310" r="180" fill="none" stroke="#1b3542" strokeWidth="1" strokeDasharray="3 8" />
@@ -115,7 +124,43 @@ function Backdrop({ background }: { background: SceneBackground }) {
         </>
       )}
 
-      {(background === "moon" || background === "moon-crater") && (
+      {background === "earthrise" && (
+        <>
+          <circle cx="790" cy="178" r="66" fill="#176f91" />
+          <path d="M744 154 Q770 136 803 148 T842 176 Q816 205 776 198Z" fill="#64b9a4" opacity=".75" />
+          <path d="M768 205 Q792 190 823 203 Q800 225 771 218Z" fill="#95d2bf" opacity=".55" />
+          <circle cx="790" cy="178" r="66" fill="none" stroke="#7ee6f2" strokeWidth="1.5" opacity=".7" />
+          <path d="M0 470 Q160 430 330 466 T700 452 T1000 478 V600 H0Z" fill="#4b5554" />
+          <path d="M0 470 Q160 430 330 466 T700 452 T1000 478" fill="none" stroke="#d5e1e1" strokeWidth="1.5" opacity=".45" />
+          <ellipse cx="320" cy="525" rx="140" ry="24" fill="#0a161c" opacity=".5" />
+        </>
+      )}
+
+      {background === "transmission" && (
+        <>
+          <circle cx="500" cy="300" r="70" fill="none" stroke="#39b9c9" strokeWidth="1.5" opacity=".55" />
+          <circle cx="500" cy="300" r="120" fill="none" stroke="#2b5262" strokeWidth="1" strokeDasharray="3 8" />
+          <circle cx="500" cy="300" r="180" fill="none" stroke="#e4b44c" strokeWidth="1" opacity=".3" />
+          <path d="M500 300 L900 170" stroke="#39b9c9" strokeWidth="1.2" strokeDasharray="4 7" opacity=".55" />
+          <circle cx="500" cy="300" r="5" fill="#62ecff" />
+          <circle cx="920" cy="160" r="9" fill="#e4b44c" />
+          <path d="M0 480 H1000" stroke="#1b3542" strokeWidth="1" />
+        </>
+      )}
+
+      {background === "data-lab" && (
+        <>
+          <path d="M80 350 L250 300 L430 340 L610 305 L790 345 L930 315" fill="none" stroke="#39b9c9" strokeWidth="1.5" opacity=".45" />
+          <path d="M80 365 L250 315 L430 355 L610 320 L790 360 L930 330" fill="none" stroke="#e4b44c" strokeWidth=".8" strokeDasharray="2 6" opacity=".35" />
+          <rect x="130" y="395" width="160" height="3" fill="#39b9c9" opacity=".35" />
+          <rect x="130" y="410" width="250" height="2" fill="#2b5262" />
+          <rect x="570" y="390" width="260" height="2" fill="#2b5262" />
+        </>
+      )}
+
+      {(background === "moon" ||
+        background === "moon-crater" ||
+        background === "earthrise") && (
         <>
           <path d="M0 470 Q150 430 310 466 T690 452 T1000 478 V600 H0Z" fill={`url(#ground-${background})`} />
           <path d="M0 470 Q150 430 310 466 T690 452 T1000 478" fill="none" stroke="#c9d3dd" strokeWidth="1.5" opacity=".35" />
@@ -142,6 +187,13 @@ function Backdrop({ background }: { background: SceneBackground }) {
               <rect width="1000" height="600" fill="#6b3222" opacity=".25" />
               <path d="M0 330 Q280 290 520 340 T1000 320 V600 H0Z" fill="#8b4934" opacity=".18" />
               <path d="M0 380 Q240 340 470 390 T1000 370 V600 H0Z" fill="#a45b3f" opacity=".14" />
+            </>
+          )}
+          {background === "mars-canyon" && (
+            <>
+              <path d="M0 460 L90 350 L190 430 L280 360 L360 460Z" fill="#3a1c19" opacity=".9" />
+              <path d="M580 455 L700 330 L810 420 L900 350 L1000 455 V600 H580Z" fill="#321714" opacity=".85" />
+              <path d="M0 460 H1000" stroke="#d4845e" strokeWidth="1" opacity=".35" />
             </>
           )}
         </>
@@ -294,7 +346,9 @@ export function RexStage({
         compact ? "h-[300px] md:h-[360px]" : "h-[360px] md:h-[520px]",
       )}
     >
-      <Backdrop background={background} />
+      <div className="absolute inset-[-2%] animate-[scene-drift_22s_ease-in-out_infinite]">
+        <Backdrop background={background} />
+      </div>
       <svg
         viewBox="0 0 1000 600"
         preserveAspectRatio="xMidYMax slice"

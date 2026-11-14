@@ -10,7 +10,7 @@ export function EditorialDisclosure({ className }: { className?: string }) {
       )}
     >
       <TriangleAlert className="mt-0.5 size-3 shrink-0" />
-      SPACE RELICS editorial assessment by AFTERLIGHT. This is not a NASA
+      R7LA editorial assessment by AFTERLIGHT. This is not a NASA
       rating, official ranking, or agency conclusion.
     </p>
   );

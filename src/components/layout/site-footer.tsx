@@ -7,9 +7,6 @@ const archiveLinks = [
   { href: "/catalog", label: "Extended NASA Catalogue" },
   { href: "/rex", label: "REX Expedition" },
   { href: "/timeline", label: "Mission Timeline" },
-  { href: "/evidence", label: "Evidence Chain" },
-  { href: "/legacy", label: "Legacy Assessment" },
-  { href: "/archaeologist", label: "Space Archaeologist" },
   { href: "/about", label: "About the Archive" },
 ];
 
@@ -91,7 +88,7 @@ export function SiteFooter() {
             or endorsement is implied.
           </p>
           <p className="text-muted/70">
-            SPACE RELICS © 2026 AFTERLIGHT · Archive status: active
+            R7LA © 2026 AFTERLIGHT · Archive status: active
           </p>
         </div>
       </div>

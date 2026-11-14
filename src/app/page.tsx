@@ -4,12 +4,8 @@ import Link from "next/link";
 import {
   ArrowRight,
   ArrowUpRight,
-  BookOpenCheck,
-  CircleCheck,
+  CalendarRange,
   Database,
-  Quote,
-  Radio,
-  ScanSearch,
 } from "lucide-react";
 import { ObservatoryExperience } from "@/components/observatory/observatory-experience";
 import { RexCharacter } from "@/components/rex/rex-character";
@@ -18,14 +14,17 @@ import { Reveal } from "@/components/shared/reveal";
 import { SectionHeading } from "@/components/shared/section-heading";
 import {
   archiveStats,
+  archiveTimeline,
   computeLegacyTotal,
   getRelic,
   relics,
 } from "@/lib/data";
 import { toSceneRelic } from "@/lib/scene-types";
+import { extendedCatalog } from "@/data/extended-catalog";
+import { MISSIONS } from "@/r7la/data/missions";
 
 export const metadata: Metadata = {
-  title: "SPACE RELICS — Humanity's Footprints Beyond Earth",
+  title: { absolute: "R7LA — Humanity's Footprints Beyond Earth" },
   description:
     "Enter the Observatory: an interactive space archaeology archive of human artifacts on the Moon and Mars.",
 };
@@ -46,9 +45,30 @@ export default function HomePage() {
   const moonImage = getRelic("apollo-15-lunar-roving-vehicle")?.images[0];
   const marsImage = getRelic("perseverance")?.images[0];
 
+  const milestoneYears = [1969, 1976, 1997, 2012, 2021];
+  const milestones = milestoneYears
+    .map(
+      (year) =>
+        archiveTimeline.find(
+          (event) =>
+            event.date.startsWith(String(year)) &&
+            event.significance === "primary",
+        ) ?? archiveTimeline.find((event) => event.date.startsWith(String(year))),
+    )
+    .filter((event): event is (typeof archiveTimeline)[number] =>
+      Boolean(event),
+    );
+
   return (
     <>
-      <ObservatoryExperience relics={sceneRelics} stats={archiveStats} />
+      <ObservatoryExperience
+        relics={sceneRelics}
+        stats={{
+          ...archiveStats,
+          catalogue: extendedCatalog.length,
+          artifacts3d: MISSIONS.length,
+        }}
+      />
 
       <section className="mx-auto max-w-[1600px] px-5 py-20 md:px-8 md:py-28">
         <SectionHeading
@@ -150,10 +170,10 @@ export default function HomePage() {
                 <ArrowRight className="size-3.5" />
               </Link>
               <Link
-                href="/archaeologist"
+                href="/timeline"
                 className="inline-flex items-center gap-3 border border-line-bright px-5 py-3 font-mono text-[9px] uppercase tracking-[0.14em] text-silver transition-colors hover:border-teal hover:text-teal-bright"
               >
-                Talk to REX
+                Explore the timeline
               </Link>
             </div>
             <p className="mt-4 font-mono text-[7px] uppercase tracking-[0.1em] text-muted/60">
@@ -167,46 +187,56 @@ export default function HomePage() {
         <div className="grid gap-12 lg:grid-cols-12 lg:gap-8">
           <Reveal className="lg:col-span-7">
             <div className="border border-line p-6 md:p-10">
-              <div className="flex items-center gap-3">
-                <BookOpenCheck className="size-4 text-gold" />
-                <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-gold">
-                  Evidence chain / primary record
-                </p>
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <CalendarRange className="size-4 text-gold" />
+                  <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-gold">
+                    Mission timeline / 1967 — 2026
+                  </p>
+                </div>
+                <Link
+                  href="/timeline"
+                  className="inline-flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.14em] text-teal-bright transition-colors hover:text-gold"
+                >
+                  Open timeline
+                  <ArrowUpRight className="size-3.5" />
+                </Link>
               </div>
-              <Quote className="mt-10 size-7 text-teal/60" />
-              <blockquote className="mt-4 max-w-2xl text-balance text-3xl font-medium leading-[1.15] tracking-[-0.035em] text-white md:text-5xl">
-                “Every important claim must resolve to a source, a status, and a
-                reason to believe it.”
-              </blockquote>
-              <p className="mt-6 max-w-xl text-sm leading-7 text-muted">
-                Verified mission records are separated from scientific
-                interpretations and hypothetical scenarios. No citation is
-                invented. No missing field is filled with guesswork.
+              <h2 className="mt-8 max-w-2xl text-balance text-3xl font-medium leading-[1.05] tracking-[-0.04em] text-white md:text-5xl">
+                Five decades.
+                <span className="text-teal-bright"> One chronology.</span>
+              </h2>
+              <p className="mt-5 max-w-xl text-sm leading-7 text-muted">
+                Launch, landing, discovery, silence. Follow every dated event in
+                the archive on a single interactive timeline, filtered by world,
+                event type, or era.
               </p>
-              <div className="mt-10 grid grid-cols-3 gap-4 border-t border-line/60 pt-6">
-                <EvidenceStat
-                  icon={<CircleCheck />}
-                  label="Verified"
-                  value="Mission records"
-                />
-                <EvidenceStat
-                  icon={<ScanSearch />}
-                  label="Interpretation"
-                  value="Scientific reading"
-                />
-                <EvidenceStat
-                  icon={<Radio />}
-                  label="Hypothesis"
-                  value="Clearly labeled"
-                />
+              <div className="mt-8">
+                {milestones.map((event) => (
+                  <Link
+                    key={event.id}
+                    href={`/timeline#event-${event.id}`}
+                    className="group grid grid-cols-[58px_minmax(0,1fr)_auto] items-center gap-4 border-t border-line/50 py-3.5"
+                  >
+                    <span className="font-mono text-[11px] text-gold">
+                      {event.date.slice(0, 4)}
+                    </span>
+                    <span className="min-w-0">
+                      <span className="block truncate text-sm text-silver transition-colors group-hover:text-white">
+                        {event.title}
+                      </span>
+                      <span className="mt-0.5 block font-mono text-[7px] uppercase tracking-[0.12em] text-muted">
+                        {event.mission} · {event.destination}
+                      </span>
+                    </span>
+                    <ArrowUpRight className="size-3.5 shrink-0 text-muted transition-colors group-hover:text-gold" />
+                  </Link>
+                ))}
               </div>
-              <Link
-                href="/evidence"
-                className="mt-8 inline-flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.14em] text-teal-bright transition-colors hover:text-gold"
-              >
-                Inspect the evidence ledger
-                <ArrowRight className="size-3.5" />
-              </Link>
+              <p className="mt-6 font-mono text-[8px] uppercase tracking-[0.12em] text-muted/70">
+                {archiveTimeline.length} dated events · sourced records · Moon
+                and Mars
+              </p>
             </div>
           </Reveal>
 
@@ -238,69 +268,6 @@ export default function HomePage() {
               </div>
             </div>
           </Reveal>
-        </div>
-      </section>
-
-      <section className="border-t border-line/60 bg-[radial-gradient(ellipse_at_50%_120%,rgba(11,122,143,.18),transparent_65%)]">
-        <div className="mx-auto max-w-[1600px] px-5 py-20 md:px-8 md:py-28">
-          <div className="grid items-end gap-10 lg:grid-cols-12">
-            <div className="lg:col-span-8">
-              <p className="font-mono text-[9px] uppercase tracking-[0.22em] text-gold">
-                04 / AI Space Archaeologist
-              </p>
-              <h2 className="mt-6 max-w-4xl text-balance text-4xl font-medium leading-[1.03] tracking-[-0.045em] text-white md:text-6xl">
-                Ask what happened after
-                <span className="text-teal-bright"> the mission ended.</span>
-              </h2>
-              <p className="mt-6 max-w-2xl text-sm leading-7 text-muted">
-                Select a relic and ask why it was left behind, what it
-                discovered, or whether it still matters. Answers are grounded in
-                the archive and cite their sources. Hypotheticals are labeled.
-              </p>
-              <div className="mt-8 flex flex-wrap gap-3">
-                <Link
-                  href="/archaeologist"
-                  className="inline-flex items-center gap-3 border border-gold bg-gold px-5 py-3.5 font-mono text-[9px] uppercase tracking-[0.15em] text-abyss transition-colors hover:bg-[#f2c76a]"
-                >
-                  Open the assistant
-                  <ArrowRight className="size-3.5" />
-                </Link>
-                <Link
-                  href="/legacy"
-                  className="inline-flex items-center gap-3 border border-line-bright px-5 py-3.5 font-mono text-[9px] uppercase tracking-[0.15em] text-silver transition-colors hover:border-teal hover:text-teal-bright"
-                >
-                  Read the Legacy methodology
-                </Link>
-              </div>
-              <p className="mt-4 font-mono text-[8px] uppercase tracking-[0.12em] text-muted/70">
-                Curated demo available without an API key. Live model mode is
-                explicitly labeled when configured.
-              </p>
-            </div>
-            <div className="lg:col-span-4">
-              <div className="border border-line/70 bg-abyss/50 p-5">
-                <p className="font-mono text-[8px] uppercase tracking-[0.16em] text-muted">
-                  Try a question
-                </p>
-                <div className="mt-4 space-y-2">
-                  {[
-                    "Why was this object left behind?",
-                    "Is it still scientifically useful?",
-                    "What did humanity learn from it?",
-                  ].map((question) => (
-                    <Link
-                      key={question}
-                      href={`/archaeologist?q=${encodeURIComponent(question)}`}
-                      className="group flex items-start justify-between gap-4 border border-line/60 px-3 py-3 text-xs leading-5 text-silver/80 transition-colors hover:border-teal/50 hover:text-white"
-                    >
-                      {question}
-                      <ArrowUpRight className="mt-0.5 size-3 shrink-0 text-muted group-hover:text-gold" />
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       </section>
     </>
@@ -375,26 +342,6 @@ function Metric({ value, label }: { value: number; label: string }) {
       <p className="mt-1 font-mono text-[8px] uppercase tracking-[0.14em] text-muted">
         {label}
       </p>
-    </div>
-  );
-}
-
-function EvidenceStat({
-  icon,
-  label,
-  value,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-}) {
-  return (
-    <div>
-      <span className="text-teal [&_svg]:size-4">{icon}</span>
-      <p className="mt-3 font-mono text-[8px] uppercase tracking-[0.12em] text-silver">
-        {label}
-      </p>
-      <p className="mt-1 text-xs text-muted">{value}</p>
     </div>
   );
 }

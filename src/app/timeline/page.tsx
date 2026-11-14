@@ -44,9 +44,10 @@ export default function TimelinePage() {
               <span className="text-muted">has a date.</span>
             </h1>
             <p className="mt-5 max-w-2xl text-sm leading-7 text-muted md:text-base">
-              Reconstruct five decades of exploration through launch, landing,
-              discovery, silence, and legacy. Select any record to inspect the
-              evidence behind it.
+              Five decades of exploration on a single interactive chronograph.
+              Filter by world, event type, or era; follow launch, landing,
+              discovery, silence, and aftermath; then open the object record
+              behind any date.
             </p>
           </div>
           <div className="grid grid-cols-3 border border-line/70 bg-abyss/45">

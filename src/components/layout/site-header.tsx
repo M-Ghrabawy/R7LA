@@ -9,13 +9,11 @@ import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/
 import { cn } from "@/lib/utils";
 
 const nav = [
-  { href: "/", label: "Observatory" },
+  { href: "/", label: "Archive" },
+  { href: "/observatory", label: "3D Observatory" },
   { href: "/explore", label: "Explore" },
   { href: "/rex", label: "REX" },
   { href: "/timeline", label: "Timeline" },
-  { href: "/evidence", label: "Evidence" },
-  { href: "/legacy", label: "Legacy" },
-  { href: "/archaeologist", label: "Archaeologist" },
 ];
 
 export function SiteHeader() {
@@ -25,7 +23,7 @@ export function SiteHeader() {
   return (
     <header className="fixed inset-x-0 top-0 z-40 border-b border-line/60 bg-abyss/85 backdrop-blur-md">
       <div className="mx-auto flex h-[68px] max-w-[1600px] items-center justify-between px-5 md:px-8">
-        <Link href="/" aria-label="SPACE RELICS Observatory" className="shrink-0">
+        <Link href="/" aria-label="R7LA Observatory" className="shrink-0">
           <Wordmark />
         </Link>
 

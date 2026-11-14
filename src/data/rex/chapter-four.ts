@@ -1,0 +1,298 @@
+import type { Chapter } from "@/lib/story/schema";
+
+export const chapterFour: Chapter = {
+  id: "what-remains",
+  slug: "what-remains",
+  order: 4,
+  title: "What Remains",
+  subtitle: "Survival is not the same as usefulness.",
+  summary:
+    "REX compares physical presence, operational state, planned lifetime, surviving signals, and the evidence behind each claim.",
+  objective:
+    "Audit status and evidence, locate surviving signals, and separate verified records from interpretation and hypothesis.",
+  scenes: [
+    {
+      id: "status-audit",
+      kind: "puzzle",
+      eyebrow: "Chapter 04 / condition audit",
+      title: "Present does not mean working.",
+      dialogue: [
+        "A descent stage can be present and inactive. A retroreflector can be passive and still useful. A rover can be present without being operational.",
+        "Classify the archive's physical and operational states.",
+      ],
+      rexPose: "inspect",
+      rexExpression: "focused",
+      background: "data-lab",
+      props: ["archive-core"],
+      artifactIds: [
+        "apollo-11-laser-ranging-retroreflector",
+        "apollo-11-lunar-module",
+        "curiosity",
+        "opportunity",
+        "lunokhod-1",
+      ],
+      sourceIds: [
+        "nssdc-apollo-11",
+        "ilrs-lunar-ranging",
+        "nasa-msl-curiosity",
+        "nasa-mer-opportunity",
+        "nasa-lroc-lunokhod",
+      ],
+      audioTheme: "archive",
+      puzzle: {
+        type: "classify",
+        prompt: "Sort the artifacts by operational state.",
+        hint: "The laser retroreflector needs no power but is still detectable.",
+        success:
+          "Classification verified. Presence and usefulness are now separate fields.",
+        buckets: [
+          { id: "active", label: "Active" },
+          { id: "passive", label: "Passive / still detectable" },
+          { id: "inactive", label: "Inactive" },
+        ],
+        items: [
+          { id: "lrrr", label: "Apollo 11 LRRR", answer: "passive" },
+          { id: "lm", label: "Eagle descent stage", answer: "inactive" },
+          { id: "curiosity", label: "Curiosity", answer: "active" },
+          { id: "opportunity", label: "Opportunity", answer: "inactive" },
+          { id: "lunokhod", label: "Lunokhod 1", answer: "inactive" },
+        ],
+      },
+    },
+    {
+      id: "evidence-audit",
+      kind: "puzzle",
+      eyebrow: "Research archive / evidence chain",
+      title: "What kind of claim is this?",
+      dialogue: [
+        "I found three kinds of statements in the archive: verified mission records, scientific interpretations, and hypothetical scenarios.",
+        "They are not interchangeable. Label them correctly.",
+      ],
+      rexPose: "think",
+      rexExpression: "curious",
+      background: "data-lab",
+      props: ["archive-core"],
+      artifactIds: [],
+      sourceIds: ["nasa-apollo-11", "nasa-mer-opportunity", "nasa-alsj"],
+      audioTheme: "archive",
+      puzzle: {
+        type: "classify",
+        prompt: "Sort each statement into the correct evidence category.",
+        hint: "A future recovery plan that does not exist is hypothetical.",
+        success:
+          "Evidence audit complete. The archive preserves uncertainty instead of hiding it.",
+        buckets: [
+          { id: "verified", label: "Verified record" },
+          { id: "interpretation", label: "Scientific interpretation" },
+          { id: "hypothetical", label: "Hypothetical" },
+        ],
+        items: [
+          {
+            id: "landing",
+            label: "Apollo 11 landed on 20 July 1969.",
+            answer: "verified",
+          },
+          {
+            id: "water",
+            label:
+              "Opportunity found evidence of ancient water at Meridiani Planum.",
+            answer: "interpretation",
+          },
+          {
+            id: "recover",
+            label:
+              "A future crew could recover the descent stage for display.",
+            answer: "hypothetical",
+          },
+        ],
+      },
+    },
+    {
+      id: "lifetime-audit",
+      kind: "comparison",
+      eyebrow: "Lifetime study / what endurance means",
+      title: "Designed for days. Remembered for decades.",
+      dialogue: [
+        "Opportunity was planned for 90 sols and operated for 5,111. Spirit was planned for 90 and operated for 2,208.",
+        "Lunokhod 1 was planned for 90 Earth days and operated for 322.",
+        "Longevity is not the same as scientific value, but it changes what a mission can become.",
+      ],
+      rexPose: "point",
+      rexExpression: "content",
+      background: "data-lab",
+      props: ["rover", "archive-core"],
+      artifactIds: ["opportunity", "spirit", "lunokhod-1"],
+      sourceIds: [
+        "nasa-mer-opportunity",
+        "nasa-mer-spirit",
+        "nasa-lroc-lunokhod",
+      ],
+      audioTheme: "archive",
+    },
+    {
+      id: "signal-audit",
+      kind: "puzzle",
+      eyebrow: "Listening post / surviving signals",
+      title: "Not every silence is permanent.",
+      dialogue: [
+        "Some objects are silent. Some still return a signal. The difference matters to the archive.",
+        "I am scanning for active optical and radio returns from the Moon and Mars.",
+        "Sweep the receiver and identify every surviving signal.",
+      ],
+      rexPose: "transmit",
+      rexExpression: "focused",
+      background: "data-lab",
+      props: ["dish", "retroreflector", "archive-core"],
+      artifactIds: [
+        "apollo-11-laser-ranging-retroreflector",
+        "curiosity",
+        "perseverance",
+      ],
+      sourceIds: [
+        "ilrs-lunar-ranging",
+        "nasa-msl-curiosity",
+        "nasa-mars-2020",
+      ],
+      audioTheme: "archive",
+      puzzle: {
+        type: "scan",
+        prompt: "Resolve three surviving instrument signals.",
+        hint: "Sweep slowly across the full band. The signal meter rises near a living return.",
+        success:
+          "Three signals resolved. The archive can now distinguish continuing operations from historical silence.",
+        tolerance: 10,
+        targets: [
+          {
+            id: "lrrr",
+            label: "Lunar laser return",
+            frequency: 44,
+            detail:
+              "Apollo retroreflectors continue to support lunar laser ranging.",
+            sourceIds: ["ilrs-lunar-ranging"],
+          },
+          {
+            id: "curiosity",
+            label: "Curiosity relay",
+            frequency: 72,
+            detail:
+              "Curiosity remains operational in Gale Crater under an extended mission.",
+            sourceIds: ["nasa-msl-curiosity"],
+          },
+          {
+            id: "perseverance",
+            label: "Perseverance relay",
+            frequency: 88,
+            detail:
+              "Perseverance remains active in Jezero Crater and continues caching samples.",
+            sourceIds: ["nasa-mars-2020"],
+          },
+        ],
+      },
+    },
+    {
+      id: "lunar-network-loss",
+      kind: "archive",
+      eyebrow: "ALSEP / the long shutdown",
+      title: "A network goes quiet.",
+      dialogue: [
+        "The Apollo surface experiment packages kept returning data long after the crews left.",
+        "The lunar ALSEP network was eventually shut down in 1977. The stations remain, but the data stream ended.",
+        "A dormant instrument is still an archaeological object. Its silence has a date and a cause.",
+      ],
+      rexPose: "inspect",
+      rexExpression: "concerned",
+      background: "moon",
+      props: ["dish", "lander"],
+      artifactIds: ["apollo-12-lunar-module"],
+      sourceIds: ["nasa-apollo-12", "nssdc-apollo-12"],
+      audioTheme: "lunar",
+    },
+    {
+      id: "return-question",
+      kind: "puzzle",
+      eyebrow: "Heritage / intervention",
+      title: "What should a future mission do?",
+      dialogue: [
+        "A future crew could visit these sites. It could stabilize an artifact, study it in place, or attempt recovery.",
+        "The archive does not contain an approved recovery plan. This is an editorial reflection, not a mission decision.",
+        "Choose the principle that best protects both evidence and memory.",
+      ],
+      rexPose: "think",
+      rexExpression: "focused",
+      background: "moon",
+      props: ["descent-stage", "tracks", "archive-core"],
+      artifactIds: ["apollo-11-lunar-module"],
+      sourceIds: ["nasa-alsj", "nssdc-apollo-sites"],
+      audioTheme: "lunar",
+      puzzle: {
+        type: "choice",
+        prompt: "What should guide a future visit?",
+        hint: "The site itself is evidence. Removing an object can remove its context.",
+        success:
+          "Principle recorded: document first, preserve context, and treat recovery as a last resort requiring evidence.",
+        options: [
+          {
+            id: "remove",
+            label: "Remove the most valuable objects.",
+            detail: "Prioritizes display over site relationships.",
+          },
+          {
+            id: "preserve",
+            label: "Document and preserve the site in place.",
+            detail: "Protects the relationships that make archaeology possible.",
+          },
+          {
+            id: "ignore",
+            label: "Leave without recording anything.",
+            detail: "Avoids intervention but loses the opportunity to document.",
+          },
+        ],
+        answer: "preserve",
+      },
+    },
+    {
+      id: "what-remains-record",
+      kind: "archive",
+      eyebrow: "Archive assembly / condition report",
+      title: "The object is evidence of the mission.",
+      dialogue: [
+        "What remains is not only metal and dust. It is a record of decisions, instruments, operators, and discoveries.",
+        "The same object can be physical heritage, a scientific dataset, and a warning about the limits of design.",
+        "The archive must hold all three without confusing them.",
+      ],
+      rexPose: "inspect",
+      rexExpression: "focused",
+      background: "archive",
+      props: ["archive-core", "descent-stage", "rover", "retroreflector"],
+      artifactIds: [
+        "apollo-11-lunar-module",
+        "opportunity",
+        "apollo-11-laser-ranging-retroreflector",
+      ],
+      sourceIds: [
+        "nasa-alsj",
+        "nasa-mer-opportunity",
+        "ilrs-lunar-ranging",
+      ],
+      audioTheme: "archive",
+    },
+    {
+      id: "tomorrow-transition",
+      kind: "transition",
+      eyebrow: "Final transmission / next task",
+      title: "Prepare a message for tomorrow.",
+      dialogue: [
+        "The archive is almost complete.",
+        "But an archive is not a cupboard. It is a message addressed to someone who has not yet arrived.",
+        "Help me decide what must survive.",
+      ],
+      rexPose: "transmit",
+      rexExpression: "excited",
+      background: "transmission",
+      props: [],
+      artifactIds: [],
+      sourceIds: ["nasa-apollo-11", "nasa-mars-2020"],
+      audioTheme: "tension",
+    },
+  ],
+};

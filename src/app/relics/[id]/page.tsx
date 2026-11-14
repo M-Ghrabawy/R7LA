@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -12,11 +12,8 @@ import {
   Radio,
   ScanSearch,
 } from "lucide-react";
-import { AssistantPanel } from "@/components/assistant/assistant-panel";
 import { LifetimeComparison } from "@/components/relic/lifetime-comparison";
-import { LegacyScorePanel } from "@/components/relic/legacy-score-panel";
 import { TimelineList } from "@/components/relic/timeline-list";
-import { EvidencePanel } from "@/components/relic/evidence-panel";
 import { RelicCard } from "@/components/shared/relic-card";
 import { SectionHeading } from "@/components/shared/section-heading";
 import {
@@ -27,9 +24,8 @@ import { SourceLinks, InlineSources } from "@/components/shared/source-list";
 import { AIArtworkDisclosure } from "@/components/shared/disclosures";
 import { SchematicViewer } from "@/components/three/schematic-viewer";
 import { RexDiscoveryLog } from "@/components/rex/rex-discovery-log";
-import { liveProviderConfigured } from "@/lib/ai";
+import { observatoryHrefForRelic } from "@/r7la/bridge";
 import {
-  computeLegacyTotal,
   formatCoordinate,
   formatDate,
   getRelic,
@@ -51,10 +47,10 @@ export async function generateMetadata({
   const relic = getRelic(id);
   if (!relic) return { title: "Relic not found" };
   return {
-    title: `${relic.shortName} — ${relic.mission}`,
+    title: `${relic.shortName} â€” ${relic.mission}`,
     description: relic.description,
     openGraph: {
-      title: `${relic.shortName} · SPACE RELICS`,
+      title: `${relic.shortName} Â· R7LA`,
       description: relic.description,
       images: [{ url: relic.images[0].src, alt: relic.images[0].alt }],
     },
@@ -62,9 +58,9 @@ export async function generateMetadata({
 }
 
 const precisionLabels = {
-  exact: "Exact · sourced coordinates",
-  approximate: "Approximate · sourced coordinates",
-  "landing-ellipse": "Landing region · not an exact point",
+  exact: "Exact Â· sourced coordinates",
+  approximate: "Approximate Â· sourced coordinates",
+  "landing-ellipse": "Landing region Â· not an exact point",
 };
 
 export default async function RelicPage({
@@ -89,8 +85,7 @@ export default async function RelicPage({
       (item) => item.destination === relic.destination && item.id !== relic.id,
     ),
   ).slice(0, 3);
-  const liveConfigured = liveProviderConfigured();
-  const editorScore = computeLegacyTotal(relic.legacy);
+  const observatoryHref = observatoryHrefForRelic(relic.id);
   const imageSourceFor = (sourceId: string) => getSource(sourceId);
 
   return (
@@ -134,12 +129,22 @@ export default async function RelicPage({
               {relic.shortName}
             </h1>
             <p className="mt-4 font-mono text-[10px] uppercase tracking-[0.17em] text-muted">
-              {relic.mission} · landed {formatDate(relic.landingDate)} ·{" "}
+              {relic.mission} Â· landed {formatDate(relic.landingDate)} Â·{" "}
               {relic.destination}
             </p>
             <p className="mt-6 max-w-2xl text-sm leading-7 text-silver/70 md:text-base md:leading-8">
               {relic.description}
             </p>
+            {observatoryHref && (
+              <Link
+                href={observatoryHref}
+                className="mt-7 inline-flex items-center gap-3 border border-teal-bright/60 bg-teal/10 px-5 py-3 font-mono text-[9px] uppercase tracking-[0.15em] text-teal-bright transition-colors hover:border-gold hover:text-gold"
+              >
+                <Orbit className="size-3.5" />
+                Open 3D scan
+                <ArrowUpRight className="size-3.5" />
+              </Link>
+            )}
           </div>
 
           <div className="lg:col-span-5">
@@ -200,9 +205,8 @@ export default async function RelicPage({
           />
           <HeroDatum
             icon={<Radio />}
-            label="Editorial legacy"
-            value={`${editorScore} / 100`}
-            accent
+            label="Record status"
+            value="Sources reviewed"
           />
         </div>
       </div>
@@ -376,96 +380,14 @@ export default async function RelicPage({
       </section>
 
       <section className="mx-auto max-w-[1600px] px-5 py-16 md:px-8 md:py-24">
-        <div className="grid gap-12 lg:grid-cols-12">
-          <div className="lg:col-span-7">
-            <SectionHeading
-              index="05"
-              label="Chronology"
-              title="Mission timeline."
-            />
-            <div className="mt-8">
-              <TimelineList events={relic.timeline} />
-            </div>
-          </div>
-          <div className="lg:col-span-5">
-            <SectionHeading
-              index="06"
-              label="Evidence chain"
-              title="What is known."
-              description="Verified records, scientific interpretations, and hypothetical scenarios are separated."
-            />
-            <EvidencePanel claims={relic.claims} className="mt-8" />
-          </div>
-        </div>
-      </section>
-
-      <section className="border-y border-line/60 bg-void/30">
-        <div className="mx-auto grid max-w-[1600px] gap-8 px-5 py-16 md:px-8 md:py-24 lg:grid-cols-12">
-          <div className="lg:col-span-5">
-            <SectionHeading
-              index="07"
-              label="Legacy assessment"
-              title="A measured editorial view."
-              description="Five dimensions, explained. Adjustable weights and full methodology are available in the Legacy section."
-            />
-            <Link
-              href="/legacy"
-              className="mt-6 inline-flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.14em] text-teal-bright transition-colors hover:text-gold"
-            >
-              Open legacy comparison
-              <ArrowRight className="size-3.5" />
-            </Link>
-          </div>
-          <div className="lg:col-span-7">
-            <LegacyScorePanel assessment={relic.legacy} />
-          </div>
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-[1600px] px-5 py-16 md:px-8 md:py-24">
-        <div className="grid gap-8 lg:grid-cols-12">
-          <div className="lg:col-span-4">
-            <SectionHeading
-              index="08"
-              label="AI archaeologist"
-              title="Interrogate the record."
-              description="Ask this object about its purpose, end of mission, science, condition, or future. Answers are grounded in the sources shown on this page."
-            />
-            <div className="mt-6 border border-line/60 bg-panel/20 p-4">
-              <p className="font-mono text-[8px] uppercase tracking-[0.14em] text-muted">
-                Object context
-              </p>
-              <p className="mt-2 text-sm text-silver">{relic.name}</p>
-              <p className="mt-2 font-mono text-[8px] uppercase tracking-[0.1em] text-muted">
-                {relic.mission} · {relic.destination} ·{" "}
-                {relic.operationalStatus.replaceAll("-", " ")}
-              </p>
-              <div className="mt-4 flex flex-wrap gap-1.5">
-                {relic.claims.slice(0, 3).map((claim) => (
-                  <span
-                    key={claim.id}
-                    className="border border-line/50 px-2 py-1 font-mono text-[6px] uppercase tracking-[0.1em] text-muted"
-                  >
-                    {claim.status}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </div>
-          <div className="lg:col-span-8">
-            <AssistantPanel
-              artifacts={[
-                {
-                  id: relic.id,
-                  shortName: relic.shortName,
-                  missionShort: relic.missionShort,
-                  destination: relic.destination,
-                  category: relic.category,
-                },
-              ]}
-              fixedRelicId={relic.id}
-              liveConfigured={liveConfigured}
-            />
+        <div className="max-w-4xl">
+          <SectionHeading
+            index="05"
+            label="Chronology"
+            title="Mission timeline."
+          />
+          <div className="mt-8">
+            <TimelineList events={relic.timeline} />
           </div>
         </div>
       </section>
@@ -473,7 +395,7 @@ export default async function RelicPage({
       <section className="border-t border-line/60 bg-void/40">
         <div className="mx-auto max-w-[1600px] px-5 py-16 md:px-8 md:py-24">
           <SectionHeading
-            index="09"
+            index="06"
             label="Reference record"
             title="Sources and attribution."
             description="Mission records, coordinate references, historical material, and NASA image-library entries used to build this investigation."
@@ -511,7 +433,7 @@ export default async function RelicPage({
       {related.length > 0 && (
         <section className="mx-auto max-w-[1600px] px-5 py-16 md:px-8 md:py-24">
           <SectionHeading
-            index="10"
+            index="07"
             label="Same world"
             title="Continue the investigation."
           />
@@ -624,3 +546,4 @@ function DataField({
     </div>
   );
 }
+

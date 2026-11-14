@@ -2,15 +2,20 @@ import type { Metadata, Viewport } from "next";
 import "@fontsource-variable/space-grotesk";
 import "@fontsource/ibm-plex-mono/400.css";
 import "@fontsource/ibm-plex-mono/500.css";
+import "@fontsource/plus-jakarta-sans/500.css";
+import "@fontsource/plus-jakarta-sans/600.css";
+import "@fontsource/plus-jakarta-sans/700.css";
+import "@fontsource/ibm-plex-sans/400.css";
+import "@fontsource/ibm-plex-sans/500.css";
+import "@fontsource/ibm-plex-sans/600.css";
 import "./globals.css";
-import { SiteHeader } from "@/components/layout/site-header";
-import { SiteFooter } from "@/components/layout/site-footer";
+import { SiteChrome } from "@/components/layout/site-chrome";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://space-relics.afterlight.space"),
+  metadataBase: new URL("https://r7la.afterlight.space"),
   title: {
-    default: "SPACE RELICS — Humanity's Footprints Beyond Earth",
-    template: "%s · SPACE RELICS",
+    default: "R7LA — Humanity's Footprints Beyond Earth",
+    template: "%s · R7LA",
   },
   description:
     "An interactive space archaeology archive of human-made objects on the Moon and Mars. Investigate rovers, landers, experiments, mission timelines, and evidence.",
@@ -26,15 +31,15 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "AFTERLIGHT" }],
   openGraph: {
-    title: "SPACE RELICS",
+    title: "R7LA",
     description:
       "Humanity's footprints beyond Earth. An independent interactive archive of space archaeology.",
     type: "website",
-    siteName: "SPACE RELICS",
+    siteName: "R7LA",
   },
   twitter: {
     card: "summary_large_image",
-    title: "SPACE RELICS",
+    title: "R7LA",
     description:
       "Humanity's footprints beyond Earth. An interactive space archaeology archive.",
   },
@@ -57,11 +62,7 @@ export default function RootLayout({
         >
           Skip to archive
         </a>
-        <SiteHeader />
-        <main id="main-content" className="flex-1 pt-[68px]">
-          {children}
-        </main>
-        <SiteFooter />
+        <SiteChrome>{children}</SiteChrome>
       </body>
     </html>
   );

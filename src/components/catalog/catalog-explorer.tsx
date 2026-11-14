@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { ArrowUpRight, Search, X } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Search, X } from "lucide-react";
 import type { ExtendedObject } from "@/data/extended-catalog";
 import { cn } from "@/lib/utils";
 
@@ -211,6 +211,13 @@ export function CatalogExplorer({ objects }: { objects: ExtendedObject[] }) {
                   <ArrowUpRight className="size-2.5" />
                 </a>
               </div>
+              <Link
+                href={`/catalog/${object.id}`}
+                className="mt-3 inline-flex items-center gap-2 border border-teal/40 bg-teal/5 px-2.5 py-1.5 font-mono text-[7px] uppercase tracking-[0.12em] text-teal-bright transition-colors hover:border-gold hover:text-gold"
+              >
+                View record
+                <ArrowRight className="size-3" />
+              </Link>
             </div>
           </article>
         ))}

@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   ArrowRight,
   ArrowUpRight,
@@ -58,6 +58,18 @@ export function ExplorerExperience({
   const [category, setCategory] = useState("all");
   const [status, setStatus] = useState<StatusFilter>("all");
   const [filtersOpen, setFiltersOpen] = useState(false);
+
+  // Deep links work in a fully static export: read world/relic from the URL.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const worldParam = params.get("world")?.toLowerCase();
+    if (worldParam === "mars") setWorld("Mars");
+    if (worldParam === "moon") setWorld("Moon");
+    const relicParam = params.get("relic");
+    if (relicParam && relics.some((relic) => relic.id === relicParam)) {
+      setSelectedId(relicParam);
+    }
+  }, [relics]);
 
   const worldRelics = useMemo(
     () => relics.filter((relic) => relic.destination === world),
@@ -459,21 +471,9 @@ export function ExplorerExperience({
                 <PhysicalBadge status={selected.physicalStatus} />
               </div>
 
-              <div className="mt-5 border border-line/60 p-3">
-                <div className="flex items-end justify-between">
-                  <p className="font-mono text-[8px] uppercase tracking-[0.14em] text-muted">
-                    Legacy / editorial
-                  </p>
-                  <p className="font-mono text-2xl text-gold">
-                    {String(selected.legacyScore).padStart(2, "0")}
-                  </p>
-                </div>
-                <div className="mt-3 h-1 bg-line/70">
-                  <div
-                    className="h-full bg-gold"
-                    style={{ width: `${selected.legacyScore}%` }}
-                  />
-                </div>
+              <div className="mt-5 flex items-center justify-between border border-line/60 p-3 font-mono text-[8px] uppercase tracking-[0.14em] text-muted">
+                <span>Archive record</span>
+                <span className="text-silver">{selected.missionShort}</span>
               </div>
 
               <Link

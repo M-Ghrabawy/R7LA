@@ -26,8 +26,12 @@ export const sceneBackgroundSchema = z.enum([
   "deep-space",
   "moon",
   "moon-crater",
+  "earthrise",
   "mars",
   "mars-dust",
+  "mars-canyon",
+  "data-lab",
+  "transmission",
 ]);
 
 export const audioThemeSchema = z.enum([
@@ -170,6 +174,53 @@ export const signalPuzzleSchema = z.object({
   }),
 });
 
+export const pathPuzzleSchema = z.object({
+  type: z.literal("path"),
+  prompt: z.string().min(1),
+  hint: z.string().min(1),
+  success: z.string().min(1),
+  cols: z.number().int().min(3).max(6),
+  rows: z.number().int().min(3).max(5),
+  maxSteps: z.number().int().positive(),
+  start: z.object({ x: z.number().int(), y: z.number().int() }),
+  targets: z
+    .array(
+      z.object({
+        id: z.string().min(1),
+        label: z.string().min(1),
+        x: z.number().int(),
+        y: z.number().int(),
+        detail: z.string().min(1),
+        sourceIds: z.array(z.string()).min(1),
+      }),
+    )
+    .min(2),
+  obstacles: z
+    .array(z.object({ x: z.number().int(), y: z.number().int() }))
+    .default([]),
+});
+
+export const allocatePuzzleSchema = z.object({
+  type: z.literal("allocate"),
+  prompt: z.string().min(1),
+  hint: z.string().min(1),
+  success: z.string().min(1),
+  budget: z.number().positive(),
+  target: z.number().positive(),
+  items: z
+    .array(
+      z.object({
+        id: z.string().min(1),
+        label: z.string().min(1),
+        cost: z.number().positive(),
+        value: z.number().positive(),
+        detail: z.string().min(1),
+        sourceIds: z.array(z.string()).min(1),
+      }),
+    )
+    .min(3),
+});
+
 export const puzzleSchema = z.discriminatedUnion("type", [
   hotspotPuzzleSchema,
   sequencePuzzleSchema,
@@ -178,6 +229,8 @@ export const puzzleSchema = z.discriminatedUnion("type", [
   scanPuzzleSchema,
   signalPuzzleSchema,
   excavationPuzzleSchema,
+  pathPuzzleSchema,
+  allocatePuzzleSchema,
 ]);
 
 export const storySceneSchema = z.object({

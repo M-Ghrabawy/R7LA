@@ -1,4 +1,4 @@
-# SPACE RELICS — AFTERLIGHT
+# R7LA — AFTERLIGHT
 
 **Humanity's footprints beyond Earth.**
 
@@ -6,7 +6,7 @@ An interactive space archaeology archive of human-made objects on the Moon and M
 
 > Every mission leaves something behind. Every relic has a story. And every story deserves to be remembered.
 
-SPACE RELICS is an independent editorial project by **AFTERLIGHT**. It is not affiliated with, endorsed by, or operated by NASA.
+R7LA is an independent editorial project by **AFTERLIGHT**. It is not affiliated with, endorsed by, or operated by NASA.
 
 ---
 
@@ -258,7 +258,7 @@ Rules:
 
 ## REX disclosure
 
-REX is an original fictional character created by AFTERLIGHT for SPACE RELICS. REX is not a NASA robot, mission, or official spokesperson. Narrative dialogue is interpretive storytelling built around sources. Puzzles are educational reconstructions and not operational simulations.
+REX is an original fictional character created by AFTERLIGHT for R7LA. REX is not a NASA robot, mission, or official spokesperson. Narrative dialogue is interpretive storytelling built around sources. Puzzles are educational reconstructions and not operational simulations.
 
 ---
 

@@ -1,10 +1,15 @@
 import type { NextConfig } from "next";
 
+const isStatic = process.env.STATIC_EXPORT === "1";
+
 const nextConfig: NextConfig = {
+  output: isStatic ? "export" : undefined,
+  trailingSlash: isStatic ? true : undefined,
   reactStrictMode: false,
   images: {
     formats: ["image/avif", "image/webp"],
     deviceSizes: [360, 640, 768, 1024, 1280, 1600, 1920],
+    unoptimized: isStatic ? true : undefined,
   },
   turbopack: {
     rules: {
@@ -15,6 +20,7 @@ const nextConfig: NextConfig = {
     },
   },
   async headers() {
+    if (isStatic) return [];
     return [
       {
         source: "/(.*)",
