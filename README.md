@@ -2,7 +2,7 @@
 
 **Humanity's footprints beyond Earth.**
 
-An interactive space archaeology archive of human-made objects on the Moon and Mars, presented through **REX**, an original fictional archaeological explorer, and a five-chapter evidence-led story mode.
+R7LA is an interactive space-archaeology archive of human-made objects on the Moon and Mars, paired with a 3D solar-system observatory and a five-chapter REX expedition. Every claim is tied to a stored source; every object is a place you can visit.
 
 > Every mission leaves something behind. Every relic has a story. And every story deserves to be remembered.
 
@@ -14,44 +14,25 @@ R7LA is an independent editorial project by **AFTERLIGHT**. It is not affiliated
 
 ### Archive
 
-- 14 full primary investigations across the Moon and Mars.
-- 12 additional catalogued NASA objects spanning the Moon, Mars, Ceres, Eros, deep space, and heliocentric orbit.
-- 60 source records, 43 evidence claims, 71 timeline events, and 27 local NASA photographs in the primary archive.
-- REX field studies and Moon scene redesign with spectrum scanning and laser-link interactions.
-- Physical status separated from operational status:
-  - present
-  - present but not directly imaged
-  - active
-  - passive but still detectable
-  - inactive
-  - decommissioned
-- Verified mission records separated from scientific interpretation and hypothetical scenarios.
-- Sourced coordinates with precision labels.
+- **14 full primary investigations** across the Moon and Mars.
+- **12 extended NASA catalogue records** spanning the Moon, Mars, Ceres, Eros, deep space, and heliocentric orbit.
+- **26 archive records** in total, backed by **60 source records**, **43 evidence claims**, and **71 dated timeline events**.
+- Physical status is separated from operational status: present, present but not directly imaged, active, passive but still detectable, inactive, decommissioned.
+- Sourced coordinates with explicit precision labels.
 - Planned versus actual operational lifetime comparisons.
-- Editorial Legacy Score with adjustable weights and explicit “not a NASA rating” disclosure.
+- 27 local NASA photographs with attribution and source links.
+- Fourteen REX discovery logs.
 
-### Observatory and Explorer
+### 3D Observatory
 
-- Procedural Moon and Mars globes.
-- Instanced starfield and artifact markers.
-- 3D orbit and 2D coordinate-plot modes.
-- Search, mission/category filters, coordinates, and status indicators.
-- WebGL error boundary and 2D fallback.
-
-### Relic investigations
-
-Each relic page includes:
-
-- REX Discovery Log with citations.
-- NASA historical photography with attribution.
-- Interactive AFTERLIGHT schematic, clearly labeled as not flight hardware.
-- Mission purpose, operational history, current condition, and scientific legacy.
-- Planned versus actual lifetime study.
-- Mission timeline.
-- Evidence chain.
-- Legacy assessment.
-- REX field study entry point.
-- Object-aware grounded assistant.
+- **17 interactive 3D artifacts** across the Moon, Mars, and deep space.
+- Cinematic launch pad, orbital solar system, and artifact inspection scenes.
+- Procedural PBR models — no external GLB downloads required.
+- Vector-style planets and moons rendered with flat, illustrated surfaces.
+- Instanced starfield, asteroid belt, elliptical orbits, and surface-pinned artifact markers.
+- 2D coordinate plots for every primary object.
+- Deep links: `/observatory?artifact=apollo-lunar-modules`.
+- WebGL error boundary and graceful fallback.
 
 ### REX Expedition
 
@@ -63,40 +44,27 @@ Five interactive chapters:
 4. **What Remains**
 5. **A Message to Tomorrow**
 
-Plus **14 field studies**, one for every relic. Moon field studies now include five scenes, and the expanded lunar chapter includes spectrum scanning, dust-table excavation, laser-link alignment, and new ALSEP and Surveyor 3 scenes.
+Plus **14 field studies**, one for every primary relic.
 
 Story features:
 
-- **Dust Table excavation:** brush away lunar sediment, expose footpads and experiment hardware, and preserve site relationships.
-- **REX Field Journal:** completed scenes and discoveries persist locally at `/rex/journal` with source links.
-
-- Consistent original blue-and-white SVG REX character, based on the supplied reference, **without the cape and without reproducing the NASA logo**.
-- Reusable vector landscapes, artifact props, character poses, expressions, and scene transitions.
-- Data-driven scene system.
-- Reusable interactive puzzles:
-  - hotspot site scans
-  - mission-event sequencing
-  - status classification
-  - evidence classification
-  - interpretation choices
-- Source citations attached to scenes and Discovery Logs.
-- Browser-synthesized ambient audio for every scene and interaction sound effects.
-- Audio muted until the visitor enables it.
-- Scene audio pauses when the tab is hidden.
+- Consistent original blue-and-white SVG REX character, without the cape and without reproducing the NASA logo.
+- Data-driven scene system with 42 scenes.
+- Reusable interactive puzzles: hotspot scans, event sequencing, status classification, evidence classification, interpretation choices.
+- Dust-table excavation, spectrum scanning, and laser-link alignment.
+- Source citations attached to scenes and discovery logs.
+- Browser-synthesized ambient audio and interaction sound effects, muted until enabled.
 - Local-only chapter and field-study progress.
-- Reduced-motion support through global CSS preferences.
+- Reduced-motion support.
 
-### AI / REX assistant
+### Timeline
 
-- Provider abstraction:
-  - `demo` — deterministic responses from structured archive records, no LLM.
-  - `openai-compatible` — optional live model with grounded archive context.
-- No API key is required for demo mode.
-- Demo mode is visibly labeled.
-- Citations are limited to stored sources.
-- Hypothetical answers are labeled.
-- Cadet and Archivist reading levels.
-- Request validation, rate limiting, and citation filtering.
+- **71 dated events** on a single interactive chronograph.
+- Year-by-year event-density chart, 1967–2026.
+- Filters for world, event type, and free-text search.
+- Oldest/newest sorting and sticky decade headers.
+- Expandable event records with sources and direct links to the object record and REX field study.
+- Deep links: `/timeline#event-<id>`.
 
 ---
 
@@ -104,21 +72,36 @@ Story features:
 
 | Route | Purpose |
 |---|---|
-| `/` | Observatory landing experience |
-| `/explore` | Planet Explorer |
+| `/` | Archive landing experience |
+| `/observatory` | 3D launch pad, solar system, and artifact inspection |
+| `/explore` | Planet explorer and object index |
 | `/catalog` | Extended NASA catalogue |
-| `/relics/[id]` | Artifact investigation |
-| `/timeline` | Mission chronology |
-| `/evidence` | Claim and citation ledger |
-| `/legacy` | Adjustable editorial assessment |
-| `/archaeologist` | Talk to REX |
+| `/catalog/[id]` | Extended catalogue record |
+| `/relics/[id]` | Primary artifact investigation |
+| `/timeline` | Interactive mission chronograph |
 | `/rex` | Five-chapter expedition hub |
 | `/rex/chapter/[slug]` | Playable REX chapter |
 | `/rex/relic/[id]` | Playable relic field study |
 | `/rex/journal` | Locally stored REX field journal |
-| `/about` | Methodology, attribution, AI and fiction disclosures |
-| `/api/assistant` | Grounded assistant endpoint |
-| `/api/health` | Health check |
+| `/about` | Methodology, attribution, and disclosures |
+| `/api/health` | Health check (server build only) |
+
+---
+
+## Tech stack
+
+- **Next.js 16** (App Router, Turbopack)
+- **React 19**
+- **TypeScript**
+- **Tailwind CSS 4**
+- **three.js** + **@react-three/fiber** + **@react-three/drei**
+- **Zustand** for 3D observatory state
+- **Zod** for runtime data validation
+- **Framer Motion** for interface reveals
+- **Radix UI** primitives
+- Fontsource variable fonts
+
+No API keys, accounts, or external services are required.
 
 ---
 
@@ -149,41 +132,51 @@ npm run start
 
 ---
 
-## Environment variables
+## Static export (Cloudflare Pages)
 
-AI is optional. Without a key, REX demo mode is used and visibly labeled.
+The site can be exported to plain HTML, CSS, and JavaScript:
 
-Copy `.env.example` to `.env.local`:
-
-```env
-AI_PROVIDER=openai-compatible
-AI_API_KEY=
-AI_BASE_URL=https://api.openai.com/v1
-AI_MODEL=gpt-4.1-mini
+```powershell
+$env:STATIC_EXPORT="1"
+npm run build
 ```
 
-Set `AI_PROVIDER=demo` to force demo behavior even if a key exists.
+Output:
 
-Never commit `.env.local` or API keys.
+```text
+out/
+```
+
+Upload the **contents** of `out/` to Cloudflare Pages. Recommended settings:
+
+| Setting | Value |
+|---|---|
+| Framework preset | None |
+| Build command | `STATIC_EXPORT=1 npm run build` |
+| Build output directory | `out` |
+
+A `_headers` file is included for security headers and long-lived caching of `/_next/*`.
+
+The static export omits `/api/health`; every page, the 3D observatory, the archive, REX expedition, and timeline are fully static.
 
 ---
 
 ## Scripts
 
 ```powershell
-npm run dev           # Development server
-npm run build         # Production build
-npm run start         # Production server
-npm run typecheck     # TypeScript check
-npm run lint          # ESLint
-npm run validate:data # Schema, source, story, and asset validation
-npm run check         # typecheck + lint + validate:data
-npm run smoke         # Route and assistant API smoke test
-npm run check:sources # Verify all source URLs respond
-npm run ingest:nasa   # Refresh normalized NASA image metadata manifest
+npm run dev            # Development server
+npm run build          # Production build
+npm run start          # Production server
+npm run typecheck      # TypeScript check
+npm run lint           # ESLint
+npm run validate:data  # Schema, source, story, and asset validation
+npm run check          # typecheck + lint + validate:data
+npm run smoke          # Route smoke test (expects a running server)
+npm run check:sources  # Verify all source URLs respond
+npm run ingest:nasa    # Refresh normalized NASA image metadata manifest
 ```
 
-`npm run smoke` expects a running server at `http://localhost:3000`, or set:
+`npm run smoke` expects `http://localhost:3000` unless `BASE_URL` is set:
 
 ```powershell
 $env:BASE_URL="http://localhost:3000"; npm run smoke
@@ -193,94 +186,90 @@ $env:BASE_URL="http://localhost:3000"; npm run smoke
 
 ## Data architecture
 
-- `src/data/relics.ts` — artifact records.
+- `src/data/relics.ts` — 14 primary artifact records.
+- `src/data/extended-catalog.ts` — 12 extended catalogue records.
 - `src/data/sources.ts` — central source registry and NASA image catalog.
 - `src/data/rex/chapters.ts` — five data-driven chapters.
-- `src/data/rex/discovery-logs.ts` — 14 REX logs.
-- `src/data/rex/field-studies.ts` — reusable field-study generator for every relic.
-- `src/lib/story/schema.ts` — Zod schemas for scenes, puzzles, logs, and chapters.
-- `src/lib/story/audio.ts` — Web Audio ambient engine and sound effects.
-- `src/lib/story/progress.ts` — local completion state.
-- `scripts/validate-data.ts` — cross-checks sources, artifacts, scenes, and puzzles.
+- `src/data/rex/discovery-logs.ts` — 14 REX discovery logs.
+- `src/data/rex/field-studies.ts` — 14 relic field studies.
+- `src/lib/schema.ts` — Zod schemas for relics, sources, claims, timelines, and lifetimes.
+- `src/lib/data.ts` — validated accessors and derived archive statistics.
+- `src/r7la/data/missions.ts` — 17 3D artifact records.
+- `src/r7la/bridge.ts` — mapping between 3D artifacts and archive records.
 
-### Adding a story scene
-
-Add a typed scene object to a chapter or field study in `src/data/rex/`. The player renders scenes by `kind` and supports `hotspot`, `sequence`, `classify`, and `choice` puzzles. Scenes can reuse any environment, prop, and REX pose.
-
-Every scene should define:
-
-- `audioTheme`
-- `rexPose`
-- `rexExpression`
-- `background`
-- `props`
-- `sourceIds`
-- `artifactIds`
-
-Run `npm run validate:data` after editing.
+All records are validated at import time. Duplicate IDs, unknown source references, and schema violations fail the build.
 
 ---
 
-## Audio
+## Project structure
 
-- Ambient soundscapes are synthesized at runtime through the Web Audio API.
-- No external or copyrighted audio assets are bundled.
-- Audio is muted until the visitor presses **Enable audio**.
-- Every scene has its own ambient theme.
-- Puzzles, hotspot reveals, advances, errors, and completion use synthesized cues.
-- Audio pauses when the tab is hidden.
-- Reduced-motion mode does not disable audio automatically; sound remains a separate control.
-
----
-
-## Source and media policy
-
-Primary source families:
-
-- NASA NSSDCA Master Catalog
-- NASA mission pages
-- Apollo Lunar Surface Journal
-- NASA Image and Video Library
-- NASA / LROC lunar imaging
-- International Laser Ranging Service
-- NASA Solar System Exploration
-
-Rules:
-
-- No invented dates, coordinates, lifetimes, or citations.
-- Missing data stays missing.
-- Approximate and landing-ellipse coordinates are labeled.
-- NASA imagery is linked to its original Image and Video Library record.
-- No NASA logo, insignia, or implied endorsement.
-- Vector scenes and schematics are original AFTERLIGHT visualizations, not NASA mission footage, recovered telemetry, or flight hardware.
+```text
+src/
+  app/                 Next.js routes
+  components/
+    brand/             Logo and wordmark
+    catalog/           Extended catalogue explorer
+    explore/           Planet explorer
+    layout/            Header, footer, immersive chrome
+    observatory/       Archive landing globe
+    relic/             Relic detail panels
+    rex/               REX character, stage, discovery logs
+    shared/            Shared UI and planet map
+    story/             Story player, puzzles, excavation
+    three/             Archive 3D scenes
+    timeline/          Timeline chronograph
+  data/                Archive, sources, REX chapters
+  lib/                 Schema, derived data, story state, utilities
+  r7la/                R7LA 3D observatory (scenes, models, store)
+public/
+  nasa/                Local NASA imagery and manifest
+  audio/               Voiceover manifest
+  models/              Custom model manifest
+scripts/               Validation, ingestion, smoke test, static server
+```
 
 ---
 
-## REX disclosure
+## Design system
 
-REX is an original fictional character created by AFTERLIGHT for R7LA. REX is not a NASA robot, mission, or official spokesperson. Narrative dialogue is interpretive storytelling built around sources. Puzzles are educational reconstructions and not operational simulations.
+- Deep abyss palette with teal and gold accents.
+- Space Grotesk for display, IBM Plex Mono for technical labels.
+- Hairline borders, corner frames, technical labels, and grain overlays.
+- Editorial layouts that prioritise the record over decoration.
+- Reduced-motion support through global CSS preferences.
+
+---
+
+## Disclosures
+
+- NASA imagery is public domain unless otherwise noted. No NASA logo or endorsement is implied.
+- Object schematics and 3D models are original AFTERLIGHT visualizations, not flight hardware or official NASA models.
+- REX is an original fictional character created by AFTERLIGHT. Narrative dialogue is interpretive storytelling built around sources.
+- Puzzles are educational reconstructions, not operational simulations.
+- Hypothetical scenarios are explicitly labeled.
+- Where a field is unknown, it is left missing rather than filled with plausible-looking data.
+- Positions marked approximate or landing-ellipse are not exact points.
 
 ---
 
 ## Known limitations
 
-- No authentic NASA GLB/GLTF model is bundled; schematics are illustrative.
-- Some Mars final positions are approximate or represented by landing regions.
-- Active mission status should be checked against current NASA updates.
-- REX story scenes are vector interpretations, not historical imagery.
-- The Legacy Score is an editorial instrument, not an official rating.
-- Live LLM mode requires an external API key and has not been exercised in demo-only environments.
+- Some rover positions are landing regions or approximate final areas; each record states its precision.
+- No authentic NASA 3D models are bundled. All 3D objects are procedural interpretations.
+- The archive is not a live mission-status feed. Active status comes from cited mission material and should be checked against current NASA updates.
+- The REX expedition is fiction built on a sourced archive; it is not a mission reconstruction.
+- Static exports do not include the `/api/health` endpoint.
 
 ---
 
-## Git
+## Sources
 
-The project is developed with local commits. Do not commit secrets or generated caches. Ignored directories include `.next`, `node_modules`, `.tmp`, `.npm-cache`, and environment files.
+- [NASA Image and Video Library](https://images.nasa.gov/)
+- [NASA NSSDCA Master Catalog](https://nssdc.gsfc.nasa.gov/nmc/)
+- [NASA Solar System Exploration](https://science.nasa.gov/solar-system/)
+- [Apollo Lunar Surface Journal](https://www.nasa.gov/history/alsj-and-afj/)
+- [USGS Astrogeology](https://astrogeology.usgs.gov/)
 
 ---
 
-## License and attribution
-
-Original application code, visual identity, REX character, vector scenes, and editorial text: © 2026 AFTERLIGHT.
-
-NASA imagery remains subject to NASA media usage guidelines. Source links and attribution are displayed with each image. No NASA endorsement is implied.
+**R7LA** · AFTERLIGHT · Humanity's footprints beyond Earth.

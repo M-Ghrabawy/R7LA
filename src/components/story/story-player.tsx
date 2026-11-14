@@ -11,7 +11,7 @@ import {
   ChevronRight,
   ExternalLink,
   Radio,
-  RotateCcw,
+  SkipForward,
   Volume2,
   VolumeX,
 } from "lucide-react";
@@ -435,34 +435,38 @@ export function StoryPlayer({
               </div>
             )}
 
-            <div className="mt-4 flex items-center justify-between gap-2">
-              <button
-                onClick={previous}
-                disabled={index === 0}
-                className="flex items-center gap-1.5 border border-line px-3 py-2 font-mono text-[8px] uppercase tracking-[0.1em] text-muted transition-colors hover:text-silver disabled:opacity-30"
-              >
-                <ChevronLeft className="size-3" /> Back
-              </button>
-              <button
-                onClick={next}
-                disabled={!sceneDone}
-                className="flex items-center gap-1.5 border border-gold bg-gold px-3 py-2 font-mono text-[8px] uppercase tracking-[0.1em] text-abyss transition-colors hover:bg-[#f2c76a] disabled:border-line disabled:bg-transparent disabled:text-muted"
-              >
-                {index === scenes.length - 1 ? "Complete" : "Continue"}
-                <ChevronRight className="size-3" />
-              </button>
+            <div className="mt-4 space-y-2">
+              <div className="flex items-center justify-between gap-2">
+                <button
+                  onClick={previous}
+                  disabled={index === 0}
+                  className="flex items-center gap-1.5 border border-line-bright bg-panel/40 px-3.5 py-2.5 font-mono text-[8px] uppercase tracking-[0.1em] text-silver transition-colors hover:border-teal-bright hover:text-white disabled:opacity-30"
+                >
+                  <ChevronLeft className="size-3" /> Back
+                </button>
+                <button
+                  onClick={next}
+                  disabled={!sceneDone}
+                  className="flex items-center gap-1.5 border border-gold bg-gold px-3.5 py-2.5 font-mono text-[8px] uppercase tracking-[0.1em] text-abyss transition-colors hover:bg-[#f2c76a] disabled:border-line disabled:bg-transparent disabled:text-muted"
+                >
+                  {index === scenes.length - 1 ? "Complete" : "Continue"}
+                  <ChevronRight className="size-3" />
+                </button>
+              </div>
+              {scene.puzzle && !sceneDone && (
+                <button
+                  onClick={() => {
+                    setPuzzleSolved(true);
+                    audio.play("advance");
+                  }}
+                  className="flex w-full items-center justify-center gap-2 border border-gold/60 bg-gold/[0.08] px-3 py-3 font-mono text-[9px] uppercase tracking-[0.14em] text-gold transition-colors hover:border-gold hover:bg-gold/20 hover:text-[#f2c76a]"
+                >
+                  <SkipForward className="size-3.5" />
+                  Skip interaction
+                  <span className="text-[8px] text-gold/60">— unlock scene</span>
+                </button>
+              )}
             </div>
-            {scene.puzzle && !sceneDone && (
-              <button
-                onClick={() => {
-                  setPuzzleSolved(true);
-                  audio.play("advance");
-                }}
-                className="mt-2 flex items-center gap-1.5 font-mono text-[7px] uppercase tracking-[0.1em] text-muted/60 hover:text-gold"
-              >
-                <RotateCcw className="size-2.5" /> Skip interaction
-              </button>
-            )}
           </div>
         </aside>
       </div>
