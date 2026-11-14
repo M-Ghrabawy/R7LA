@@ -268,8 +268,8 @@ function ArtifactSceneContent({ mission }: { mission: MissionArtifact }) {
         controlsRef.current.target.lerp(_approachTarget, 1 - Math.exp(-2.6 * dt));
         controlsRef.current.update();
       } else if (approachActive.current) {
-        _approachCamPos.set(4.6, 2.35, 5.1);
-        _approachTarget.set(-0.45, 0.85, 0);
+        _approachCamPos.set(4.0, 2.0, 4.5);
+        _approachTarget.set(-0.35, 0.75, 0);
         state.camera.position.lerp(_approachCamPos, 1 - Math.exp(-3.4 * dt));
         controlsRef.current.target.lerp(_approachTarget, 1 - Math.exp(-3.8 * dt));
         controlsRef.current.update();
@@ -358,7 +358,12 @@ function ArtifactSceneContent({ mission }: { mission: MissionArtifact }) {
 
     if (animRefs.current.wheels && animRefs.current.wheels.length > 0 && cue === 'roving') {
       for (const w of animRefs.current.wheels) {
-        w.rotation.x += dt * 2.8;
+        const axis = (w.userData as { spinAxis?: string } | undefined)?.spinAxis;
+        if (axis === 'z') {
+          w.rotation.z -= dt * 2.8;
+        } else {
+          w.rotation.x += dt * 2.8;
+        }
       }
     }
 
